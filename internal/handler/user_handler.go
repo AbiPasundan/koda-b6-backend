@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"sync/atomic"
 
 	"github.com/gin-gonic/gin"
@@ -99,8 +100,6 @@ func SearchUser(ctx *gin.Context) {
 			SELECT id, full_name, email, address, phone FROM users WHERE id = $1
 		`, id)
 
-	// fmt.Println(id)
-
 	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
 
 	if err != nil {
@@ -127,4 +126,84 @@ func SearchUser(ctx *gin.Context) {
 			Results: users,
 		})
 	}
+}
+
+func DeleteUser(ctx *gin.Context) {
+	rawId := ctx.Param("id")
+	id, err := strconv.Atoi(rawId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, test{
+			Success: false,
+			Message: "Id tidak ditemukan",
+		})
+	}
+	connConfig, err := pgx.ParseConfig("")
+	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+
+	// ` SELECT id, full_name, email, address, phone FROM users WHERE id = $1 `
+
+	rows, err = conn.Query(context.Background(), `
+		DELETE FROM users WHERE id = $1
+	`, id)
+
+	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
+
+	if err != nil {
+		fmt.Println(err)
+		ctx.JSON(http.StatusBadRequest, test{
+			Success: false,
+			Message: "Id tidak ditemukan",
+		})
+		return
+	}
+
+	// for _, v := range users {
+	// 	switch v.Id {
+	// 	case id:
+	// 		ctx.JSON(http.StatusOK, test{
+	// 			Success: true,
+	// 			Message: "Data User Deleted",
+	// 			Results: nil,
+	// 		})
+	// 	default:
+	// 		ctx.JSON(http.StatusNotFound, test{
+	// 			Success: false,
+	// 			Message: "Data User Not Found",
+	// 			Results: nil,
+	// 		})
+	// 	}
+	// }
+
+	for _, v := range users {
+		if id != v.Id {
+			ctx.JSON(http.StatusNotFound, test{
+				Success: false,
+				Message: "Data User Not Found",
+				Results: nil,
+			})
+			return
+		}
+
+	}
+
+	ctx.JSON(http.StatusOK, test{
+		Success: true,
+		Message: "Data User Deleted",
+		Results: users,
+	})
+
+	// if len(users) <= 0 {
+	// 	ctx.JSON(http.StatusNotFound, test{
+	// 		Success: false,
+	// 		Message: "Data User Not Found",
+	// 		Results: nil,
+	// 	})
+	// 	return
+	// } else {
+	// 	ctx.JSON(http.StatusOK, test{
+	// 		Success: true,
+	// 		Message: "Data User Deleted",
+	// 		Results: users,
+	// 	})
+	// }
 }
