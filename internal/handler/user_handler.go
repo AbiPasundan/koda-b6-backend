@@ -21,16 +21,14 @@ type test struct {
 var ListUser []models.User
 var Counter int64
 
-// var DataUser []models.User
-// var DataUser = &users
+var users []models.Users
+var user []models.User
+var rows pgx.Rows
+var conn *pgx.Conn
 
 func idCounter() int64 {
 	return atomic.AddInt64(&Counter, 1)
 }
-
-var users, err []models.User
-var rows pgx.Rows
-var conn *pgx.Conn
 
 func Home(ctx *gin.Context) {
 	connConfig, err := pgx.ParseConfig("")
@@ -71,7 +69,7 @@ func Home(ctx *gin.Context) {
 		return
 	}
 
-	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
+	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
 
 	if err != nil {
 		fmt.Println("err take data")
@@ -92,15 +90,60 @@ func Home(ctx *gin.Context) {
 }
 
 func SearchUser(ctx *gin.Context) {
-	id := ctx.Param("id")
+	i := ctx.Param("id")
+	id, _ := strconv.Atoi(i)
 	connConfig, err := pgx.ParseConfig("")
 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
 
 	rows, err = conn.Query(context.Background(), `
-			SELECT id, full_name, email, address, phone FROM users WHERE id = $1
+			SELECT id, full_name, email, password, address, phone, pictures FROM users WHERE id = $1
 		`, id)
+	user, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
 
-	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
+	// rows, err = conn.Query(context.Background(), `
+	// 		SELECT id, full_name, email, address, phone FROM users WHERE id = $1
+	// 	`, id)
+	// users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
+
+	if err != nil {
+		fmt.Println("err take data")
+		fmt.Println(err)
+		ctx.JSON(http.StatusBadRequest, test{
+			Success: false,
+			Message: "Data User Gangguan",
+		})
+		return
+	}
+
+	if len(user) <= 0 {
+		ctx.JSON(http.StatusNotFound, test{
+			Success: false,
+			Message: "Data User Not Found",
+			Results: nil,
+		})
+		return
+	} else {
+		ctx.JSON(http.StatusOK, test{
+			Success: true,
+			Message: "Data User",
+			Results: user,
+		})
+	}
+}
+
+func AddUser(ctx *gin.Context) {
+	connConfig, err := pgx.ParseConfig("")
+	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+
+	rows, err = conn.Query(context.Background(), `
+		INSERT INTO
+			users
+			("id", "full_name", "email", "password", "address", "phone", "pictures")
+			VALUES
+			(DEFAULT, 'New User From API','newuser@mail.com','newuser#123','Maharaja, Depok','0811234455','images/test/path/user.jpg');
+	`)
+
+	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
 
 	if err != nil {
 		fmt.Println("err take data")
@@ -112,23 +155,12 @@ func SearchUser(ctx *gin.Context) {
 		return
 	}
 
-	if len(users) <= 0 {
-		ctx.JSON(http.StatusNotFound, test{
-			Success: false,
-			Message: "Data User Not Found",
-			Results: nil,
-		})
-		return
-	} else {
-		ctx.JSON(http.StatusOK, test{
-			Success: true,
-			Message: "Data User",
-			Results: users,
-		})
-	}
 }
 
 func DeleteUser(ctx *gin.Context) {
+	// there is still a bug in delete
+	// if user delete user using not available id
+	// it still show messege true
 	rawId := ctx.Param("id")
 	id, err := strconv.Atoi(rawId)
 	if err != nil {
@@ -140,13 +172,11 @@ func DeleteUser(ctx *gin.Context) {
 	connConfig, err := pgx.ParseConfig("")
 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
 
-	// ` SELECT id, full_name, email, address, phone FROM users WHERE id = $1 `
-
 	rows, err = conn.Query(context.Background(), `
 		DELETE FROM users WHERE id = $1
 	`, id)
 
-	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
+	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
 
 	if err != nil {
 		fmt.Println(err)
@@ -175,7 +205,7 @@ func DeleteUser(ctx *gin.Context) {
 	// }
 
 	for _, v := range users {
-		if id != v.Id {
+		if id != int(v.Id) {
 			ctx.JSON(http.StatusNotFound, test{
 				Success: false,
 				Message: "Data User Not Found",
