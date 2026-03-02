@@ -18,6 +18,7 @@ func main() {
 	r.Use(middleware.CORSMiddleware())
 
 	r.GET("/", handler.Home)
+	r.GET("/users/:id", handler.SearchUser)
 
 	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
