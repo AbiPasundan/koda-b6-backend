@@ -2,6 +2,7 @@ package handler
 
 import (
 	"backend/internal/models"
+	"backend/internal/service"
 	"context"
 	"fmt"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 var ListUser []models.User
@@ -33,53 +35,93 @@ func idCounter() int64 {
 // @Success      200 {object} models.Response
 // @Failure      500 {object} models.Response
 // @Router       / [get]
-func Home(ctx *gin.Context) {
-	connConfig, err := pgx.ParseConfig("")
+// func Home(ctx *gin.Context) {
+// 	connConfig, err := pgx.ParseConfig("")
 
+// 	if err != nil {
+// 		fmt.Println("err euy")
+// 		fmt.Println(err)
+// 		ctx.JSON(http.StatusBadGateway, models.Response{
+// 			Success: false,
+// 			Message: "Something Gone Wrong",
+// 		})
+// 		return
+// 	}
+
+// 	conn, err = pgx.Connect(context.Background(), connConfig.ConnString())
+
+// 	if err != nil {
+// 		fmt.Println("err euy")
+// 		fmt.Println(err)
+// 		ctx.JSON(http.StatusBadGateway, models.Response{
+// 			Success: false,
+// 			Message: "Something Gone Wrong",
+// 		})
+// 		return
+// 	}
+
+// 	rows, err = conn.Query(context.Background(), `
+// 			SELECT id, full_name, email, address, phone FROM users
+// 		`)
+
+// 	if err != nil {
+// 		fmt.Println("err euy")
+// 		fmt.Println(err)
+// 		ctx.JSON(http.StatusBadGateway, models.Response{
+// 			Success: false,
+// 			Message: "Something Gone Wrong",
+// 		})
+// 		return
+// 	}
+
+// 	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
+
+// 	if err != nil {
+// 		fmt.Println("err take data")
+// 		fmt.Println(err)
+// 		ctx.JSON(http.StatusBadRequest, models.Response{
+// 			Success: false,
+// 			Message: "Data User",
+// 		})
+// 		return
+// 	}
+
+// 	ctx.JSON(http.StatusOK, models.Response{
+// 		Success: true,
+// 		Message: "Data User",
+// 		Results: users,
+// 	})
+// }
+
+type UserHandler struct {
+	UserService *service.UserService
+}
+
+func NewUserHandler(service *service.UserService) *UserHandler {
+	return &UserHandler{
+		UserService: service,
+	}
+}
+
+func (h *UserHandler) Home(ctx *gin.Context) {
+	defer conn.Close(context.Background())
+
+	godotenv.Load()
+	conn, err := pgx.Connect(context.Background(), "")
 	if err != nil {
-		fmt.Println("err euy")
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadGateway, models.Response{
+		ctx.JSON(http.StatusInternalServerError, models.Response{
 			Success: false,
-			Message: "Something Gone Wrong",
+			Message: "Database connection error",
 		})
 		return
 	}
 
-	conn, err = pgx.Connect(context.Background(), connConfig.ConnString())
+	users, err := h.UserService.GetUsers(conn)
 
 	if err != nil {
-		fmt.Println("err euy")
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadGateway, models.Response{
+		ctx.JSON(http.StatusInternalServerError, models.Response{
 			Success: false,
-			Message: "Something Gone Wrong",
-		})
-		return
-	}
-
-	rows, err = conn.Query(context.Background(), `
-			SELECT id, full_name, email, address, phone FROM users
-		`)
-
-	if err != nil {
-		fmt.Println("err euy")
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadGateway, models.Response{
-			Success: false,
-			Message: "Something Gone Wrong",
-		})
-		return
-	}
-
-	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
-
-	if err != nil {
-		fmt.Println("err take data")
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Data User",
+			Message: "Failed get users",
 		})
 		return
 	}
@@ -89,7 +131,6 @@ func Home(ctx *gin.Context) {
 		Message: "Data User",
 		Results: users,
 	})
-
 }
 
 // SearchUser godoc

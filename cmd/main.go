@@ -2,8 +2,10 @@ package main
 
 import (
 	_ "backend/docs"
+	container "backend/internal/di"
 	"backend/internal/handler"
 	"backend/internal/middleware"
+	"backend/internal/routes"
 	"fmt"
 	"os"
 
@@ -29,7 +31,11 @@ func main() {
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
 
-	r.GET("/", handler.Home)
+	c := container.BuildContainer()
+
+	routes.UserRoutes(r, c.UserHandler)
+
+	// r.GET("/", handler.Home)
 	r.GET("/users/:id", handler.SearchUser)
 	r.DELETE("/users/:id", handler.DeleteUser)
 	r.POST("/users", handler.AddUser)
