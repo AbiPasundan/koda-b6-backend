@@ -1,0 +1,129 @@
+basePath: /api/v1
+definitions:
+  models.Response:
+    properties:
+      any: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.Users:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      phone:
+        type: string
+    type: object
+host: localhost:8888
+info:
+  contact: {}
+  description: coffe shop project
+  termsOfService: http://swagger.io/terms/
+  title: Coffee Shop API
+  version: 1.0.0
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all users from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get All Users
+      tags:
+      - users
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: AddUser Process
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Users'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Users'
+      summary: AddUser Post
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Delete user by ID
+      parameters:
+      - description: User ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a single user by its ID parameter
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get user by ID
+      tags:
+      - users
+securityDefinitions:
+  BasicAuths:
+    type: basic
+swagger: "2.0"

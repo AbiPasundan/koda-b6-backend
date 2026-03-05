@@ -18,3 +18,9 @@ type User struct {
 	Phone     string `json:"phone"`
 	Pictures  string `json:"pictures"`
 }
+
+type Response struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	Results any    `json:"any"`
+}

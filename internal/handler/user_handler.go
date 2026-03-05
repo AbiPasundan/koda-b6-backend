@@ -12,12 +12,6 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type test struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-	Results any
-}
-
 var ListUser []models.User
 var Counter int64
 
@@ -30,13 +24,22 @@ func idCounter() int64 {
 	return atomic.AddInt64(&Counter, 1)
 }
 
+// Home godoc
+// @Summary      Get All Users
+// @Description  Retrieve all users from the system
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} models.Response
+// @Failure      500 {object} models.Response
+// @Router       / [get]
 func Home(ctx *gin.Context) {
 	connConfig, err := pgx.ParseConfig("")
 
 	if err != nil {
 		fmt.Println("err euy")
 		fmt.Println(err)
-		ctx.JSON(http.StatusBadGateway, test{
+		ctx.JSON(http.StatusBadGateway, models.Response{
 			Success: false,
 			Message: "Something Gone Wrong",
 		})
@@ -48,7 +51,7 @@ func Home(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("err euy")
 		fmt.Println(err)
-		ctx.JSON(http.StatusBadGateway, test{
+		ctx.JSON(http.StatusBadGateway, models.Response{
 			Success: false,
 			Message: "Something Gone Wrong",
 		})
@@ -62,7 +65,7 @@ func Home(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("err euy")
 		fmt.Println(err)
-		ctx.JSON(http.StatusBadGateway, test{
+		ctx.JSON(http.StatusBadGateway, models.Response{
 			Success: false,
 			Message: "Something Gone Wrong",
 		})
@@ -74,14 +77,14 @@ func Home(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("err take data")
 		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, test{
+		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Message: "Data User",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, test{
+	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
 		Message: "Data User",
 		Results: users,
@@ -89,6 +92,17 @@ func Home(ctx *gin.Context) {
 
 }
 
+// SearchUser godoc
+// @Summary      Get user by ID
+// @Description  Retrieve a single user by its ID parameter
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  models.Response
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Router       /users/{id} [get]
 func SearchUser(ctx *gin.Context) {
 	i := ctx.Param("id")
 	id, _ := strconv.Atoi(i)
@@ -108,7 +122,7 @@ func SearchUser(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("err take data")
 		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, test{
+		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Message: "Data User Gangguan",
 		})
@@ -116,14 +130,14 @@ func SearchUser(ctx *gin.Context) {
 	}
 
 	if len(user) <= 0 {
-		ctx.JSON(http.StatusNotFound, test{
+		ctx.JSON(http.StatusNotFound, models.Response{
 			Success: false,
 			Message: "Data User Not Found",
 			Results: nil,
 		})
 		return
 	} else {
-		ctx.JSON(http.StatusOK, test{
+		ctx.JSON(http.StatusOK, models.Response{
 			Success: true,
 			Message: "Data User",
 			Results: user,
@@ -131,6 +145,15 @@ func SearchUser(ctx *gin.Context) {
 	}
 }
 
+// Add User godoc
+// @Summary AddUser Post
+// @Description AddUser Process
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Users
+// @Failure 400 {object} models.Users
+// @Router /users [post]
 func AddUser(ctx *gin.Context) {
 	connConfig, err := pgx.ParseConfig("")
 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
@@ -140,7 +163,7 @@ func AddUser(ctx *gin.Context) {
 			users
 			("id", "full_name", "email", "password", "address", "phone", "pictures")
 			VALUES
-			(DEFAULT, 'New User From API','newuser@mail.com','newuser#123','Maharaja, Depok','0811234455','images/test/path/user.jpg');
+			(DEFAULT, 'New User From API','newuser@mail.com','newuser#123','Maharaja, Depok','0811234455','images/Response/path/user.jpg');
 	`)
 
 	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
@@ -148,92 +171,85 @@ func AddUser(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("err take data")
 		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, test{
+		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
 			Message: "Data User",
 		})
 		return
 	}
-
 }
 
+// DeleteUser godoc
+// @Summary Delete user
+// @Description Delete user by ID
+// @Tags users
+// @Produce json
+// @Param id path int true "User ID" Format(int64)
+// @Success 200 {object} models.Response
+// @Failure 400 {object} models.Response
+// @Failure 404 {object} models.Response
+// @Router 	/users/{id} [delete]
 func DeleteUser(ctx *gin.Context) {
-	// there is still a bug in delete
-	// if user delete user using not available id
-	// it still show messege true
+
 	rawId := ctx.Param("id")
+
 	id, err := strconv.Atoi(rawId)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, test{
+		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "Id tidak ditemukan",
-		})
-	}
-	connConfig, err := pgx.ParseConfig("")
-	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-
-	rows, err = conn.Query(context.Background(), `
-		DELETE FROM users WHERE id = $1
-	`, id)
-
-	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
-
-	if err != nil {
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, test{
-			Success: false,
-			Message: "Id tidak ditemukan",
+			Message: "Invalid ID",
+			Results: nil,
 		})
 		return
 	}
 
-	// for _, v := range users {
-	// 	switch v.Id {
-	// 	case id:
-	// 		ctx.JSON(http.StatusOK, test{
-	// 			Success: true,
-	// 			Message: "Data User Deleted",
-	// 			Results: nil,
-	// 		})
-	// 	default:
-	// 		ctx.JSON(http.StatusNotFound, test{
-	// 			Success: false,
-	// 			Message: "Data User Not Found",
-	// 			Results: nil,
-	// 		})
-	// 	}
-	// }
-
-	for _, v := range users {
-		if id != int(v.Id) {
-			ctx.JSON(http.StatusNotFound, test{
-				Success: false,
-				Message: "Data User Not Found",
-				Results: nil,
-			})
-			return
-		}
-
+	connConfig, err := pgx.ParseConfig("")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Database config error",
+			Results: nil,
+		})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, test{
+	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Database connection error",
+			Results: nil,
+		})
+		return
+	}
+
+	defer conn.Close(context.Background())
+
+	cmdTag, err := conn.Exec(context.Background(),
+		`DELETE FROM users WHERE id = $1`, id)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Failed delete user",
+			Results: nil,
+		})
+		return
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		ctx.JSON(http.StatusNotFound, models.Response{
+			Success: false,
+			Message: "User Not Found",
+			Results: nil,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "Data User Deleted",
-		Results: users,
+		Message: "User Deleted Successfully",
+		Results: nil,
 	})
 
-	// if len(users) <= 0 {
-	// 	ctx.JSON(http.StatusNotFound, test{
-	// 		Success: false,
-	// 		Message: "Data User Not Found",
-	// 		Results: nil,
-	// 	})
-	// 	return
-	// } else {
-	// 	ctx.JSON(http.StatusOK, test{
-	// 		Success: true,
-	// 		Message: "Data User Deleted",
-	// 		Results: users,
-	// 	})
-	// }
 }
