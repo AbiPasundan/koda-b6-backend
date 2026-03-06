@@ -3,7 +3,6 @@ package main
 import (
 	_ "backend/docs"
 	container "backend/internal/di"
-	"backend/internal/handler"
 	"backend/internal/middleware"
 	"backend/internal/routes"
 
@@ -29,14 +28,18 @@ func main() {
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
 
-	c := container.BuildContainer()
+	userContainer := container.BuildContainer()
+	productContainer := container.ProductsContainer()
+	// fmt.Println(productContainer)
 
-	routes.UserRoutes(r, c.UserHandler)
+	routes.UserRoutes(r, userContainer.UserHandler)
+	routes.ProductRoutes(r, productContainer.ProductHandler)
+	// handler.ProductHandler.ProductService
 
-	// r.GET("/", handler.Home)
-	r.GET("/users/:id", handler.SearchUser)
-	r.DELETE("/users/:id", handler.DeleteUser)
-	r.POST("/users", handler.AddUser)
+	// r.GET("/products", r.Handlers...)
+	// r.GET("/users/:id", handler.SearchUser)
+	// r.DELETE("/users/:id", handler.DeleteUser)
+	// r.POST("/users", handler.AddUser)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run("localhost:8888")
 
