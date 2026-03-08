@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"sync/atomic"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
@@ -15,83 +14,11 @@ import (
 )
 
 var ListUser []models.User
-var Counter int64
 
 var users []models.Users
 var user []models.User
 var rows pgx.Rows
 var conn *pgx.Conn
-
-func idCounter() int64 {
-	return atomic.AddInt64(&Counter, 1)
-}
-
-// Home godoc
-// @Summary      Get All Users
-// @Description  Retrieve all users from the system
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Success      200 {object} models.Response
-// @Failure      500 {object} models.Response
-// @Router       / [get]
-// func Home(ctx *gin.Context) {
-// 	connConfig, err := pgx.ParseConfig("")
-
-// 	if err != nil {
-// 		fmt.Println("err euy")
-// 		fmt.Println(err)
-// 		ctx.JSON(http.StatusBadGateway, models.Response{
-// 			Success: false,
-// 			Message: "Something Gone Wrong",
-// 		})
-// 		return
-// 	}
-
-// 	conn, err = pgx.Connect(context.Background(), connConfig.ConnString())
-
-// 	if err != nil {
-// 		fmt.Println("err euy")
-// 		fmt.Println(err)
-// 		ctx.JSON(http.StatusBadGateway, models.Response{
-// 			Success: false,
-// 			Message: "Something Gone Wrong",
-// 		})
-// 		return
-// 	}
-
-// 	rows, err = conn.Query(context.Background(), `
-// 			SELECT id, full_name, email, address, phone FROM users
-// 		`)
-
-// 	if err != nil {
-// 		fmt.Println("err euy")
-// 		fmt.Println(err)
-// 		ctx.JSON(http.StatusBadGateway, models.Response{
-// 			Success: false,
-// 			Message: "Something Gone Wrong",
-// 		})
-// 		return
-// 	}
-
-// 	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
-
-// 	if err != nil {
-// 		fmt.Println("err take data")
-// 		fmt.Println(err)
-// 		ctx.JSON(http.StatusBadRequest, models.Response{
-// 			Success: false,
-// 			Message: "Data User",
-// 		})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, models.Response{
-// 		Success: true,
-// 		Message: "Data User",
-// 		Results: users,
-// 	})
-// }
 
 type UserHandler struct {
 	UserService *service.UserService
@@ -104,7 +31,6 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 }
 
 func (h *UserHandler) Home(ctx *gin.Context) {
-	defer conn.Close(context.Background())
 
 	godotenv.Load()
 	conn, err := pgx.Connect(context.Background(), "")
@@ -115,6 +41,7 @@ func (h *UserHandler) Home(ctx *gin.Context) {
 		})
 		return
 	}
+	defer conn.Close(context.Background())
 
 	users, err := h.UserService.GetUsers(conn)
 

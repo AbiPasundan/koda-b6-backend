@@ -1,0 +1,13 @@
+basePath: /api/v1
+host: localhost:PORT
+info:
+  contact: {}
+  description: coffe shop project
+  termsOfService: http://swagger.io/terms/
+  title: Coffee Shop API
+  version: 1.0.0
+paths: {}
+securityDefinitions:
+  BasicAuths:
+    type: basic
+swagger: "2.0"

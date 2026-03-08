@@ -6,8 +6,6 @@ import (
 	"backend/internal/handler"
 	"backend/internal/middleware"
 	"backend/internal/routes"
-	"fmt"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -20,7 +18,7 @@ import (
 // @description coffe shop project
 // @termsOfService http://swagger.io/terms/
 
-// @host localhost:8888
+// @host localhost:PORT
 // @BasePath /api/v1
 // @securityDefinitions.basic BasicAuths
 
@@ -40,6 +38,7 @@ func main() {
 	r.DELETE("/users/:id", handler.DeleteUser)
 	r.POST("/users", handler.AddUser)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.Run("localhost:8888")
 
-	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
+	// r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
