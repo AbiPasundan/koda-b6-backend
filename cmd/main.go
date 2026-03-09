@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "backend/docs"
+	_ "backend/cmd/docs"
 	container "backend/internal/di"
 	"backend/internal/middleware"
 	"backend/internal/routes"
@@ -12,14 +12,11 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @title Coffee Shop API
-// @version 1.0.0
-// @description coffe shop project
-// @termsOfService http://swagger.io/terms/
-
-// @host localhost:PORT
-// @BasePath /api/v1
-// @securityDefinitions.basic BasicAuths
+//	@title			Coffee Shop API
+//	@version		1.0.0
+//	@description	coffe shop project
+//	@host			localhost:8889
+//	@BasePath		/api/v1
 
 func main() {
 
@@ -30,18 +27,11 @@ func main() {
 
 	userContainer := container.BuildContainer()
 	productContainer := container.ProductsContainer()
-	// fmt.Println(productContainer)
 
 	routes.UserRoutes(r, userContainer.UserHandler)
 	routes.ProductRoutes(r, productContainer.ProductHandler)
-	// handler.ProductHandler.ProductService
-
-	// r.GET("/products", r.Handlers...)
-	// r.GET("/users/:id", handler.SearchUser)
-	// r.DELETE("/users/:id", handler.DeleteUser)
-	// r.POST("/users", handler.AddUser)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Run("localhost:8888")
+	r.Run("localhost:8889")
 
 	// r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }

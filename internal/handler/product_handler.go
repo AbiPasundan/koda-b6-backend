@@ -21,6 +21,16 @@ func NewProductHandler(service *service.ProductService) *ProductHandler {
 	}
 }
 
+// Home godoc
+//
+//	@Summary		Get All Product
+//	@Description	Retrieve all products from the system
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		500	{object}	models.Response
+//	@Router			/ [get]
 func (h *ProductHandler) Product(ctx *gin.Context) {
 	godotenv.Load()
 	conn, err := pgx.Connect(context.Background(), "")

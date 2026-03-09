@@ -61,16 +61,17 @@ func (h *UserHandler) Home(ctx *gin.Context) {
 }
 
 // SearchUser godoc
-// @Summary      Get user by ID
-// @Description  Retrieve a single user by its ID parameter
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        id   path      int  true  "User ID"
-// @Success      200  {object}  models.Response
-// @Failure      400  {object}  models.Response
-// @Failure      404  {object}  models.Response
-// @Router       /users/{id} [get]
+//
+//	@Summary		Get user by ID
+//	@Description	Retrieve a single user by its ID parameter
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"User ID"
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/users/{id} [get]
 func SearchUser(ctx *gin.Context) {
 	i := ctx.Param("id")
 	id, _ := strconv.Atoi(i)
@@ -114,14 +115,15 @@ func SearchUser(ctx *gin.Context) {
 }
 
 // Add User godoc
-// @Summary AddUser Post
-// @Description AddUser Process
-// @Tags users
-// @Accept json
-// @Produce json
-// @Success 200 {object} models.Users
-// @Failure 400 {object} models.Users
-// @Router /users [post]
+//
+//	@Summary		AddUser Post
+//	@Description	AddUser Process
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.Users
+//	@Failure		400	{object}	models.Users
+//	@Router			/users [post]
 func AddUser(ctx *gin.Context) {
 	connConfig, err := pgx.ParseConfig("")
 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
@@ -148,15 +150,16 @@ func AddUser(ctx *gin.Context) {
 }
 
 // DeleteUser godoc
-// @Summary Delete user
-// @Description Delete user by ID
-// @Tags users
-// @Produce json
-// @Param id path int true "User ID" Format(int64)
-// @Success 200 {object} models.Response
-// @Failure 400 {object} models.Response
-// @Failure 404 {object} models.Response
-// @Router 	/users/{id} [delete]
+//
+//	@Summary		Delete user
+//	@Description	Delete user by ID
+//	@Tags			users
+//	@Produce		json
+//	@Param			id	path		int	true	"User ID"	Format(int64)
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/users/{id} [delete]
 func DeleteUser(ctx *gin.Context) {
 
 	rawId := ctx.Param("id")
