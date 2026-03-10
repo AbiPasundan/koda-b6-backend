@@ -35,3 +35,6 @@ func main() {
 
 	// r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
+
+// migrate create -ext sql -dir migrations -seq i init_db
+// migrate -source file://./migrations -database postgres://postgres:1@localhost:5432/yuuke?sslmode=disable up
