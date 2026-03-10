@@ -30,3 +30,7 @@ func (u *UserService) AddUser(user models.User) (models.User, error) {
 func (u *UserService) DeleteUserById(id int) {
 	u.UserRepo.DeleteUserById(id)
 }
+
+func (u *UserService) UpdateUserById(id int, user models.User) {
+	u.UserRepo.UpdateUserById(id, user)
+}

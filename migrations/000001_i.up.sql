@@ -1,16 +1,16 @@
-CREATE TABLE category (
+CREATE TABLE IF NOT EXISTS category (
     category_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     category_name VARCHAR(30)
 );
 
-CREATE TABLE discount (
+CREATE TABLE IF NOT EXISTS discount (
     discount_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     discount_rate INT,
     description VARCHAR(500),
     is_flash_sale BOOLEAN
 );
 
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_name VARCHAR(30),
     product_desc TEXT,
@@ -22,7 +22,7 @@ CREATE TABLE products (
     CONSTRAINT fk_discount FOREIGN KEY (discount) REFERENCES discount(discount_id) ON DELETE SET NULL
 );
 
-CREATE TABLE product_variant (
+CREATE TABLE IF NOT EXISTS product_variant (
     product_variant_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_id INT,
     variant_name VARCHAR(50),
@@ -30,7 +30,7 @@ CREATE TABLE product_variant (
     CONSTRAINT fk_variant FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-CREATE TABLE product_size (
+CREATE TABLE IF NOT EXISTS product_size (
     product_size_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_id INT,
     size_name VARCHAR(50),
@@ -38,14 +38,14 @@ CREATE TABLE product_size (
     CONSTRAINT fk_size FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-CREATE TABLE product_images (
+CREATE TABLE IF NOT EXISTS product_images (
     product_images_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_id INT,
     path VARCHAR(255),
     CONSTRAINT fk_images FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     full_name VARCHAR(30),
     email VARCHAR(30),
@@ -56,7 +56,7 @@ CREATE TABLE users (
 );
 
 
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     review_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INT,
     messages TEXT,
@@ -65,7 +65,7 @@ CREATE TABLE reviews (
 );
 
 
-CREATE TABLE "orders" (
+CREATE TABLE  IF NOT EXISTS"orders" (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     delivery_method VARCHAR(30),
     full_name VARCHAR(100),

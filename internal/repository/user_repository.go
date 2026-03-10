@@ -56,16 +56,23 @@ func (u *UserRepository) AddUser(user models.User) (models.User, error) {
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
 }
 
-// func (u *UserRepository) UpdateUserById(id int) (models.User, error) {
-// 	rows, err := u.db.Query(context.Background(), `
-// 		UPDATE users SET full_name = '$1', email = 'test@mail.com', password = '$3', address = '$4', phone = '$5', pictures = '$6' WHERE id = $1
-// 	`, id)
+// update
+func (u *UserRepository) UpdateUserById(id int, user models.User) (models.User, error) {
+	// note jika update harus kirim model untuk update data
+	rows, err := u.db.Query(context.Background(), `
+		UPDATE users SET full_name = $1, email = $2, password = $3, address = $4, phone = $5, pictures = $6 WHERE id = $7 RETURNING id, full_name, email, password, address, phone, pictures
+	`, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures, id)
 
-// 	if err != nil {
-// 		return models.User{}, err
-// 	}
+	// rows, err := u.db.Query(context.Background(), `
+	// 	UPDATE users SET full_name = $1, email = $2, password = $3, address = $4, phone = $5, pictures = $6 WHERE id = $7 RETURNING id, full_name, email, password, address, phone, pictures
+	// `, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures, id)
 
-// }
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+}
 
 func (u *UserRepository) DeleteUserById(id int) {
 	rows, err := u.db.Query(context.Background(), `
