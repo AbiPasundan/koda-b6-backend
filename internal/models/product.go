@@ -8,7 +8,6 @@ type Product struct {
 	Quantity    *int    `db:"quantity"`
 	Category    *int    `db:"product_category"`
 	Discount    *int    `db:"discount"`
-	Test        *string `db:"test"`
 }
 
 type Discount struct {
