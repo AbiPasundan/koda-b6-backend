@@ -87,11 +87,10 @@ func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, models.Response{
-		Success: false,
+		Success: true,
 		Message: "User Found:)))",
 		Results: product,
 	})
-
 }
 
 func (h *ProductHandler) AddProduct(ctx *gin.Context) {
@@ -101,6 +100,46 @@ func (h *ProductHandler) AddProduct(ctx *gin.Context) {
 		Success: false,
 		Message: "User Found:)))",
 		Results: "product",
+	})
+}
+
+func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
+	godotenv.Load()
+	var product models.Product
+
+	i := ctx.Param("id")
+	id, err := strconv.Atoi(i)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Invalid id: " + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+
+	if err := ctx.ShouldBindJSON(&product); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Invalid request body: " + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+	updatedProduct, err := h.ProductService.UpdateProductById(id, product)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Failed to update product: " + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: true,
+		Message: "Successfully Updated Product",
+		Results: updatedProduct,
 	})
 
 }
