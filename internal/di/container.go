@@ -19,8 +19,18 @@ type ProductContainer struct {
 }
 
 func BuildContainer() *Container {
+	godotenv.Load()
+	connConfig, err := pgx.ParseConfig("")
+	if err != nil {
+		return nil
+	}
 
-	userRepo := repository.NewUserRepository()
+	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+	if err != nil {
+		return nil
+	}
+
+	userRepo := repository.NewUserRepository(conn)
 
 	userService := service.NewUserService(userRepo)
 

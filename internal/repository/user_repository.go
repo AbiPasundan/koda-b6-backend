@@ -8,15 +8,17 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type UserRepository struct{}
-
-func NewUserRepository() *UserRepository {
-	return &UserRepository{}
+type UserRepository struct {
+	db *pgx.Conn
 }
 
-func (r *UserRepository) GetAllUsers(conn *pgx.Conn) ([]models.Users, error) {
+func NewUserRepository(db *pgx.Conn) *UserRepository {
+	return &UserRepository{db: db}
+}
 
-	rows, err := conn.Query(context.Background(), `
+func (u *UserRepository) GetAllUsers(db *pgx.Conn) ([]models.Users, error) {
+
+	rows, err := u.db.Query(context.Background(), `
 		SELECT id, full_name, email, address, phone
 		FROM users
 	`)
