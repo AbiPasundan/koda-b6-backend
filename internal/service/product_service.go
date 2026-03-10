@@ -26,3 +26,7 @@ func (p *ProductService) GetProductById(id int) (models.Product, error) {
 func (p *ProductService) AddProduct(product models.Product) (models.Product, error) {
 	return p.ProductRepo.AddProduct(product)
 }
+
+func (p *ProductService) UpdateProductById(id int, product models.Product) (models.Product, error) {
+	return p.ProductRepo.UpdateProductById(id, product)
+}
