@@ -5,6 +5,7 @@ import (
 	"backend/internal/service"
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
@@ -21,7 +22,7 @@ func NewProductHandler(service *service.ProductService) *ProductHandler {
 	}
 }
 
-// Home godoc
+// Product godoc
 //
 //	@Summary		Get All Product
 //	@Description	Retrieve all products from the system
@@ -37,24 +38,69 @@ func (h *ProductHandler) Product(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Response{
 			Success: false,
-			Message: "Something went wrong please try again",
+			Message: "Something went wrong please try again : " + err.Error(),
 			Results: nil,
 		})
+		return
 	}
 	defer conn.Close(context.Background())
-	product, err := h.ProductService.GetProduct(conn)
+	product, err := h.ProductService.GetProduct()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Response{
 			Success: false,
-			Message: "Something went wrong please try again",
+			Message: "Something went wrong please try again : " + err.Error(),
 			Results: nil,
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "Succes get Data Product",
+		Message: "Success get Data Product",
 		Results: product,
+	})
+}
+
+func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
+	godotenv.Load()
+
+	i := ctx.Param("id")
+	id, err := strconv.Atoi(i)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Invalid ID : " + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+
+	var product models.Product
+	product, err = h.ProductService.GetProductById(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Something Gone Wrong : " + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: false,
+		Message: "User Found:)))",
+		Results: product,
+	})
+
+}
+
+func (h *ProductHandler) AddProduct(ctx *gin.Context) {
+	godotenv.Load()
+
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: false,
+		Message: "User Found:)))",
+		Results: "product",
 	})
 
 }

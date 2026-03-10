@@ -37,4 +37,9 @@ func main() {
 }
 
 // migrate create -ext sql -dir migrations -seq i init_db
+// with time format
+// migrate create -ext sql -dir migrations -format timestamp test_with_time_now
+
 // migrate -source file://./migrations -database postgres://postgres:1@localhost:5432/yuuke?sslmode=disable up
+
+// goseeder seed -s file://./seeder -d postgres://postgres:1@localhost:5432/postgres?sslmode=disable

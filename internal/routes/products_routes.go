@@ -8,4 +8,6 @@ import (
 
 func ProductRoutes(r *gin.Engine, h *handler.ProductHandler) {
 	r.GET("/products", h.Product)
+	r.GET("/products/:id", h.SearchProductById)
+	r.POST("/products", h.AddProduct)
 }

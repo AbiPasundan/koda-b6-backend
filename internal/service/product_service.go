@@ -3,8 +3,6 @@ package service
 import (
 	"backend/internal/models"
 	"backend/internal/repository"
-
-	"github.com/jackc/pgx/v5"
 )
 
 type ProductService struct {
@@ -17,6 +15,14 @@ func NewProductService(repo *repository.ProductRepository) *ProductService {
 	}
 }
 
-func (p *ProductService) GetProduct(conn *pgx.Conn) ([]models.Product, error) {
-	return p.ProductRepo.GetAllProduct(conn)
+func (p *ProductService) GetProduct() ([]models.Product, error) {
+	return p.ProductRepo.GetAllProduct()
+}
+
+func (p *ProductService) GetProductById(id int) (models.Product, error) {
+	return p.ProductRepo.GetProductById(id)
+}
+
+func (p *ProductService) AddProduct(product models.Product) (models.Product, error) {
+	return p.ProductRepo.AddProduct(product)
 }
