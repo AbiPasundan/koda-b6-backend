@@ -15,14 +15,18 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) GetUsers() ([]models.Users, error) {
-	return s.UserRepo.GetAllUsers()
+func (u *UserService) GetUsers() ([]models.Users, error) {
+	return u.UserRepo.GetAllUsers()
 }
 
-func (s *UserService) GetUserById(id int) (models.User, error) {
-	return s.UserRepo.GetUserById(id)
+func (u *UserService) GetUserById(id int) (models.User, error) {
+	return u.UserRepo.GetUserById(id)
 }
 
-func (s *UserService) DeleteUserById(id int) {
-	s.UserRepo.DeleteUserById(id)
+func (u *UserService) AddUser(user models.User) (models.User, error) {
+	return u.UserRepo.AddUser(user)
+}
+
+func (u *UserService) DeleteUserById(id int) {
+	u.UserRepo.DeleteUserById(id)
 }

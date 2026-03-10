@@ -26,12 +26,7 @@ func (u *UserRepository) GetAllUsers() ([]models.Users, error) {
 		return nil, err
 	}
 
-	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
-	if err != nil {
-		return nil, err
-	}
-
-	return users, nil
+	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
 }
 
 func (u *UserRepository) GetUserById(id int) (models.User, error) {
@@ -43,10 +38,34 @@ func (u *UserRepository) GetUserById(id int) (models.User, error) {
 		return models.User{}, err
 	}
 
-	result, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
-
-	return result, err
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
 }
+
+func (u *UserRepository) AddUser(user models.User) (models.User, error) {
+	query := `
+		INSERT INTO users (full_name, email, password, address, phone, pictures)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id, full_name, email, password, address, phone, pictures
+	`
+	rows, err := u.db.Query(context.Background(), query, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+}
+
+// func (u *UserRepository) UpdateUserById(id int) (models.User, error) {
+// 	rows, err := u.db.Query(context.Background(), `
+// 		UPDATE users SET full_name = '$1', email = 'test@mail.com', password = '$3', address = '$4', phone = '$5', pictures = '$6' WHERE id = $1
+// 	`, id)
+
+// 	if err != nil {
+// 		return models.User{}, err
+// 	}
+
+// }
 
 func (u *UserRepository) DeleteUserById(id int) {
 	rows, err := u.db.Query(context.Background(), `

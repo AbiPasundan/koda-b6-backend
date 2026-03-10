@@ -98,16 +98,43 @@ func (h *UserHandler) GetUserById(ctx *gin.Context) {
 	})
 }
 
-// // Add User godoc
-// //
-// //	@Summary		AddUser Post
-// //	@Description	AddUser Process
-// //	@Tags			users
-// //	@Accept			json
-// //	@Produce		json
-// //	@Success		200	{object}	models.Users
-// //	@Failure		400	{object}	models.Users
-// //	@Router			/users [post]
+// Add User godoc
+//
+//	@Summary		AddUser Post
+//	@Description	AddUser Process
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.Users
+//	@Failure		400	{object}	models.Users
+//	@Router			/users [post]
+func (h *UserHandler) AddUser(ctx *gin.Context) {
+	var newUser models.User
+
+	if err := ctx.ShouldBindJSON(&newUser); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Something Went Wrong" + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+	createUser, err := h.UserService.AddUser(newUser)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Internal Server Error" + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: false,
+		Message: "Internal Server Error",
+		Results: createUser,
+	})
+}
+
 // func AddUser(ctx *gin.Context) {
 // 	connConfig, err := pgx.ParseConfig("")
 // 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
