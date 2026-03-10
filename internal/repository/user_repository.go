@@ -47,3 +47,15 @@ func (u *UserRepository) GetUserById(id int) (models.User, error) {
 
 	return result, err
 }
+
+func (u *UserRepository) DeleteUserById(id int) {
+	rows, err := u.db.Query(context.Background(), `
+		DELETE FROM users WHERE id = $1;
+	`, id)
+
+	if err != nil {
+		return
+	}
+
+	defer rows.Close()
+}

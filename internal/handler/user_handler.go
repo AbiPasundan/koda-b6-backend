@@ -4,7 +4,6 @@ import (
 	"backend/internal/models"
 	"backend/internal/service"
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -85,96 +84,54 @@ func (h *UserHandler) GetUserById(ctx *gin.Context) {
 	}
 	user, err := h.UserService.GetUserById(id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
+		ctx.JSON(http.StatusNotFound, models.Response{
 			Success: false,
-			Message: "Something went wrong" + err.Error(),
+			Message: "404 Not Found " + err.Error(),
 			Results: nil,
 		})
 		return
 	}
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "User found",
+		Message: "User found:)))",
 		Results: user,
 	})
 }
 
-// func SearchUser(ctx *gin.Context) {
-// 	i := ctx.Param("id")
-// 	id, _ := strconv.Atoi(i)
+// // Add User godoc
+// //
+// //	@Summary		AddUser Post
+// //	@Description	AddUser Process
+// //	@Tags			users
+// //	@Accept			json
+// //	@Produce		json
+// //	@Success		200	{object}	models.Users
+// //	@Failure		400	{object}	models.Users
+// //	@Router			/users [post]
+// func AddUser(ctx *gin.Context) {
 // 	connConfig, err := pgx.ParseConfig("")
 // 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
 
 // 	rows, err = conn.Query(context.Background(), `
-// 			SELECT id, full_name, email, password, address, phone, pictures FROM users WHERE id = $1
-// 		`, id)
-// 	user, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
+// 		INSERT INTO
+// 			users
+// 			("id", "full_name", "email", "password", "address", "phone", "pictures")
+// 			VALUES
+// 			(DEFAULT, 'New User From API','newuser@mail.com','newuser#123','Maharaja, Depok','0811234455','images/Response/path/user.jpg');
+// 	`)
 
-// 	// rows, err = conn.Query(context.Background(), `
-// 	// 		SELECT id, full_name, email, address, phone FROM users WHERE id = $1
-// 	// 	`, id)
-// 	// users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
+// 	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
 
 // 	if err != nil {
 // 		fmt.Println("err take data")
 // 		fmt.Println(err)
 // 		ctx.JSON(http.StatusBadRequest, models.Response{
 // 			Success: false,
-// 			Message: "Data User Gangguan",
-// 		})
-// 		return
-// 	}
-
-// 	if len(user) <= 0 {
-// 		ctx.JSON(http.StatusNotFound, models.Response{
-// 			Success: false,
-// 			Message: "Data User Not Found",
-// 			Results: nil,
-// 		})
-// 		return
-// 	} else {
-// 		ctx.JSON(http.StatusOK, models.Response{
-// 			Success: true,
 // 			Message: "Data User",
-// 			Results: user,
 // 		})
+// 		return
 // 	}
 // }
-
-// Add User godoc
-//
-//	@Summary		AddUser Post
-//	@Description	AddUser Process
-//	@Tags			users
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	models.Users
-//	@Failure		400	{object}	models.Users
-//	@Router			/users [post]
-func AddUser(ctx *gin.Context) {
-	connConfig, err := pgx.ParseConfig("")
-	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-
-	rows, err = conn.Query(context.Background(), `
-		INSERT INTO
-			users
-			("id", "full_name", "email", "password", "address", "phone", "pictures")
-			VALUES
-			(DEFAULT, 'New User From API','newuser@mail.com','newuser#123','Maharaja, Depok','0811234455','images/Response/path/user.jpg');
-	`)
-
-	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
-
-	if err != nil {
-		fmt.Println("err take data")
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Data User",
-		})
-		return
-	}
-}
 
 // DeleteUser godoc
 //
@@ -187,67 +144,76 @@ func AddUser(ctx *gin.Context) {
 //	@Failure		400	{object}	models.Response
 //	@Failure		404	{object}	models.Response
 //	@Router			/users/{id} [delete]
-func DeleteUser(ctx *gin.Context) {
-
-	rawId := ctx.Param("id")
-
-	id, err := strconv.Atoi(rawId)
+func (h *UserHandler) DeleteUser(ctx *gin.Context) {
+	i := ctx.Param("id")
+	id, err := strconv.Atoi(i)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "Invalid ID",
+			Message: "Invalid Id" + err.Error(),
 			Results: nil,
 		})
 		return
 	}
-
-	connConfig, err := pgx.ParseConfig("")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Database config error",
-			Results: nil,
-		})
-		return
-	}
-
-	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Database connection error",
-			Results: nil,
-		})
-		return
-	}
-
-	defer conn.Close(context.Background())
-
-	cmdTag, err := conn.Exec(context.Background(),
-		`DELETE FROM users WHERE id = $1`, id)
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Failed delete user",
-			Results: nil,
-		})
-		return
-	}
-
-	if cmdTag.RowsAffected() == 0 {
-		ctx.JSON(http.StatusNotFound, models.Response{
-			Success: false,
-			Message: "User Not Found",
-			Results: nil,
-		})
-		return
-	}
-
+	h.UserService.DeleteUserById(id)
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "User Deleted Successfully",
-		Results: nil,
+		Message: "Succes delete user with id : ",
+		Results: "result",
 	})
-
 }
+
+// func DeleteUser(ctx *gin.Context) {
+// 	rawId := ctx.Param("id")
+// 	id, err := strconv.Atoi(rawId)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusBadRequest, models.Response{
+// 			Success: false,
+// 			Message: "Invalid ID",
+// 			Results: nil,
+// 		})
+// 		return
+// 	}
+// 	connConfig, err := pgx.ParseConfig("")
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, models.Response{
+// 			Success: false,
+// 			Message: "Database config error",
+// 			Results: nil,
+// 		})
+// 		return
+// 	}
+// 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, models.Response{
+// 			Success: false,
+// 			Message: "Database connection error",
+// 			Results: nil,
+// 		})
+// 		return
+// 	}
+// 	defer conn.Close(context.Background())
+// 	cmdTag, err := conn.Exec(context.Background(),
+// 		`DELETE FROM users WHERE id = $1`, id)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, models.Response{
+// 			Success: false,
+// 			Message: "Failed delete user",
+// 			Results: nil,
+// 		})
+// 		return
+// 	}
+// 	if cmdTag.RowsAffected() == 0 {
+// 		ctx.JSON(http.StatusNotFound, models.Response{
+// 			Success: false,
+// 			Message: "User Not Found",
+// 			Results: nil,
+// 		})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, models.Response{
+// 		Success: true,
+// 		Message: "User Deleted Successfully",
+// 		Results: nil,
+// 	})
+// }

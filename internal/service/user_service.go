@@ -22,3 +22,7 @@ func (s *UserService) GetUsers() ([]models.Users, error) {
 func (s *UserService) GetUserById(id int) (models.User, error) {
 	return s.UserRepo.GetUserById(id)
 }
+
+func (s *UserService) DeleteUserById(id int) {
+	s.UserRepo.DeleteUserById(id)
+}
