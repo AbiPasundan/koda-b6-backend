@@ -3,8 +3,6 @@ package service
 import (
 	"backend/internal/models"
 	"backend/internal/repository"
-
-	"github.com/jackc/pgx/v5"
 )
 
 type UserService struct {
@@ -17,6 +15,10 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) GetUsers(conn *pgx.Conn) ([]models.Users, error) {
-	return s.UserRepo.GetAllUsers(conn)
+func (s *UserService) GetUsers() ([]models.Users, error) {
+	return s.UserRepo.GetAllUsers()
+}
+
+func (s *UserService) GetUserById(id int) (models.User, error) {
+	return s.UserRepo.GetUserById(id)
 }

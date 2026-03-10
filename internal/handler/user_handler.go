@@ -43,7 +43,7 @@ func (h *UserHandler) Home(ctx *gin.Context) {
 	}
 	defer conn.Close(context.Background())
 
-	users, err := h.UserService.GetUsers(conn)
+	users, err := h.UserService.GetUsers()
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Response{
@@ -72,47 +72,74 @@ func (h *UserHandler) Home(ctx *gin.Context) {
 //	@Failure		400	{object}	models.Response
 //	@Failure		404	{object}	models.Response
 //	@Router			/users/{id} [get]
-func SearchUser(ctx *gin.Context) {
+func (h *UserHandler) GetUserById(ctx *gin.Context) {
 	i := ctx.Param("id")
-	id, _ := strconv.Atoi(i)
-	connConfig, err := pgx.ParseConfig("")
-	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-
-	rows, err = conn.Query(context.Background(), `
-			SELECT id, full_name, email, password, address, phone, pictures FROM users WHERE id = $1
-		`, id)
-	user, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
-
-	// rows, err = conn.Query(context.Background(), `
-	// 		SELECT id, full_name, email, address, phone FROM users WHERE id = $1
-	// 	`, id)
-	// users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
-
+	id, err := strconv.Atoi(i)
 	if err != nil {
-		fmt.Println("err take data")
-		fmt.Println(err)
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "Data User Gangguan",
-		})
-		return
-	}
-
-	if len(user) <= 0 {
-		ctx.JSON(http.StatusNotFound, models.Response{
-			Success: false,
-			Message: "Data User Not Found",
+			Message: "Invalid Id" + err.Error(),
 			Results: nil,
 		})
 		return
-	} else {
-		ctx.JSON(http.StatusOK, models.Response{
-			Success: true,
-			Message: "Data User",
-			Results: user,
-		})
 	}
+	user, err := h.UserService.GetUserById(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Something went wrong" + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: true,
+		Message: "User found",
+		Results: user,
+	})
 }
+
+// func SearchUser(ctx *gin.Context) {
+// 	i := ctx.Param("id")
+// 	id, _ := strconv.Atoi(i)
+// 	connConfig, err := pgx.ParseConfig("")
+// 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+
+// 	rows, err = conn.Query(context.Background(), `
+// 			SELECT id, full_name, email, password, address, phone, pictures FROM users WHERE id = $1
+// 		`, id)
+// 	user, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
+
+// 	// rows, err = conn.Query(context.Background(), `
+// 	// 		SELECT id, full_name, email, address, phone FROM users WHERE id = $1
+// 	// 	`, id)
+// 	// users, err = pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
+
+// 	if err != nil {
+// 		fmt.Println("err take data")
+// 		fmt.Println(err)
+// 		ctx.JSON(http.StatusBadRequest, models.Response{
+// 			Success: false,
+// 			Message: "Data User Gangguan",
+// 		})
+// 		return
+// 	}
+
+// 	if len(user) <= 0 {
+// 		ctx.JSON(http.StatusNotFound, models.Response{
+// 			Success: false,
+// 			Message: "Data User Not Found",
+// 			Results: nil,
+// 		})
+// 		return
+// 	} else {
+// 		ctx.JSON(http.StatusOK, models.Response{
+// 			Success: true,
+// 			Message: "Data User",
+// 			Results: user,
+// 		})
+// 	}
+// }
 
 // Add User godoc
 //
