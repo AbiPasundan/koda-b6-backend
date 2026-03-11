@@ -7,9 +7,12 @@ import (
 )
 
 func UserRoutes(r *gin.Engine, h *handler.UserHandler) {
-	r.GET("/admin/", h.Home)
-	r.GET("/admin/users/:id", h.GetUserById)
-	r.POST("/admin/users", h.AddUser)
-	r.PATCH("/admin/users/:id", h.UpdateUser)
-	r.DELETE("/admin/users/:id", h.DeleteUser)
+	r.Group("/admin")
+	{
+		r.GET("/", h.Home)
+		r.GET("/users/:id", h.GetUserById)
+		r.POST("/users", h.AddUser)
+		r.PATCH("/users/:id", h.UpdateUser)
+		r.DELETE("/users/:id", h.DeleteUser)
+	}
 }
