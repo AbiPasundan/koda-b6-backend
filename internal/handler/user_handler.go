@@ -3,13 +3,10 @@ package handler
 import (
 	"backend/internal/models"
 	"backend/internal/service"
-	"context"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 )
 
 type UserHandler struct {
@@ -23,18 +20,6 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 }
 
 func (h *UserHandler) Home(ctx *gin.Context) {
-
-	godotenv.Load()
-	conn, err := pgx.Connect(context.Background(), "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Database connection error",
-		})
-		return
-	}
-	defer conn.Close(context.Background())
-
 	users, err := h.UserService.GetUsers()
 
 	if err != nil {
