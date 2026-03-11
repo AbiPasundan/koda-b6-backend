@@ -2,6 +2,7 @@ package service
 
 import (
 	"backend/internal/repository"
+	"fmt"
 	"strconv"
 
 	"math/rand/v2"
@@ -33,6 +34,7 @@ func (f *ForgotPasswordService) RequestForgotPassword(email string) (string, err
 		return "", err
 	}
 	code := strconv.Itoa(rand.IntN(999999))
+	fmt.Println("that is your code save it carefully", code)
 	f.ForgotPasswordRepo.CreateForgogtPasswordRequest(code)
 	return code, nil
 }
