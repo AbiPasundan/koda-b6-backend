@@ -12,13 +12,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var ListUser []models.User
-
-var users []models.Users
-var user []models.User
-var rows pgx.Rows
-var conn *pgx.Conn
-
 type UserHandler struct {
 	UserService *service.UserService
 }
