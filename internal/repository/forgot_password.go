@@ -24,20 +24,19 @@ func (f *ForgotPasswordRepository) GetUserByEmail(token string) (models.ForgotPa
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.ForgotPassword])
 }
 
-func (f *ForgotPasswordRepository) DeleteDataByEmail(db *pgx.Conn, code string) *ForgotPasswordRepository {
+func (f *ForgotPasswordRepository) DeleteDataByEmail(code string) {
 	query := `DELETE FROM forgot_password WHERE token = $1`
 	_, err := f.db.Query(context.Background(), query, code)
 	if err != nil {
-		return nil
+		return
 	}
-	return &ForgotPasswordRepository{db: db}
 }
 
-func (f *ForgotPasswordRepository) CreateForgogtPasswordRequest(db *pgx.Conn, token string) *ForgotPasswordRepository {
+func (f *ForgotPasswordRepository) CreateForgogtPasswordRequest(token string) string {
 	query := `INSERT INTO forgot_password (token) VALUES ($1)`
 	_, err := f.db.Query(context.Background(), query, token)
 	if err != nil {
-		return nil
+		return err.Error()
 	}
-	return &ForgotPasswordRepository{db: db}
+	return token
 }
