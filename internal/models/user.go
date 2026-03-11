@@ -19,6 +19,13 @@ type User struct {
 	Pictures  *string `db:"pictures"`
 }
 
+type ForgotPassword struct {
+	Id        int    `db:"id"`
+	UserId    int    `db:"user_id"`
+	Token     string `db:"token"`
+	CreatedAt string `db:"created_at"`
+}
+
 type Response struct {
 	Success bool   `db:"success"`
 	Message string `db:"message"`
