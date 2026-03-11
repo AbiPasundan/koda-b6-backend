@@ -32,19 +32,8 @@ func (f *ForgotPasswordService) RequestForgotPassword(email string) (string, err
 	if _, err := f.ForgotPasswordRepo.GetUserByEmail(email); err != nil {
 		return "", err
 	}
-
-	// code, err := f.generateCode()
-	// if err != nil {
-	// 	return "", err
-	// }
-
-	// rawCode := rand.IntN(999999)
-	// test := strconv.Itoa(rawCode)
-
 	code := strconv.Itoa(rand.IntN(999999))
-
 	f.ForgotPasswordRepo.CreateForgogtPasswordRequest(code)
-
 	return code, nil
 }
 
@@ -53,25 +42,7 @@ func (f *ForgotPasswordService) ResetPassword(email string, code string, newPass
 	if err != nil {
 		return err
 	}
-
-	// email, err := f.ForgotPasswordRepo.GetUserByEmail(email)
-	// if email == "test@mail.com" {
-	// 	return err
-	// } else if err != nil {
-	// 	return err
-	// }
-	// test, err := f.UserRepo.GetUserById(1)
-
-	// err := f.ForgotPasswordRepo.VerifyCode(email, code)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// err = f.UserRepo.UpdatePassword(email, newPassword)
-	// if err != nil {
-	// 	return err
-	// }
-
+	f.UserRepo.UpdatePasswordByEmail(email, newPassword)
+	f.ForgotPasswordRepo.DeleteDataByEmail(email)
 	return err
-
 }
