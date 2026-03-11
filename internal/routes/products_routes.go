@@ -7,8 +7,8 @@ import (
 )
 
 func ProductRoutes(r *gin.Engine, h *handler.ProductHandler) {
-	r.GET("/products", h.Product)
-	r.GET("/products/:id", h.SearchProductById)
-	r.PATCH("/products/:id", h.UpdateProduct)
-	r.POST("/products", h.AddProduct)
+	r.GET("/admin/products", h.Product)
+	r.GET("/admin/products/:id", h.SearchProductById)
+	r.PATCH("/admin/products/:id", h.UpdateProduct)
+	r.POST("/admin/products", h.AddProduct)
 }
