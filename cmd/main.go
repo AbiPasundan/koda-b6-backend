@@ -27,9 +27,11 @@ func main() {
 
 	userContainer := container.BuildContainer()
 	productContainer := container.ProductsContainer()
+	forgotPasswordContainer := container.ForgotPasswordContainer()
 
 	routes.UserRoutes(r, userContainer.UserHandler)
 	routes.ProductRoutes(r, productContainer.ProductHandler)
+	routes.AuthRoutes(r, forgotPasswordContainer.ForgotPasswordHandler)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run("localhost:8889")
 

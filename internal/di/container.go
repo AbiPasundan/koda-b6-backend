@@ -18,6 +18,32 @@ type ProductContainer struct {
 	ProductHandler *handler.ProductHandler
 }
 
+type ForgotPassword struct {
+	ForgotPasswordHandler *handler.ForgotPasswordHandler
+}
+
+func ForgotPasswordContainer() *ForgotPassword {
+	godotenv.Load()
+	connConfig, err := pgx.ParseConfig("")
+
+	if err != nil {
+		return nil
+	}
+
+	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+	if err != nil {
+		return nil
+	}
+
+	forgotPasswordRepo := repository.NewForgotPasswordRepository(conn)
+	userRepo := repository.NewUserRepository(conn)
+	forgotPasswordService := service.NewForgotPasswordService(forgotPasswordRepo, userRepo)
+	forgotPasswordHandler := handler.NewForgotPasswordHandler(forgotPasswordService)
+	return &ForgotPassword{
+		ForgotPasswordHandler: forgotPasswordHandler,
+	}
+}
+
 func BuildContainer() *Container {
 	godotenv.Load()
 	connConfig, err := pgx.ParseConfig("")
