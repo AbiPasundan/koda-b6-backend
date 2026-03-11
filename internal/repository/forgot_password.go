@@ -16,7 +16,7 @@ func NewForgotPasswordRepository(db *pgx.Conn) *ForgotPasswordRepository {
 }
 
 func (f *ForgotPasswordRepository) GetUserByEmail(token string) (models.ForgotPassword, error) {
-	query := `SELECT id, user_id, token, created_at FROM forgot_password WHERE token = $1`
+	query := `SELECT email FROM users WHERE token = $1`
 	rows, err := f.db.Query(context.Background(), query, token)
 	if err != nil {
 		return models.ForgotPassword{}, err

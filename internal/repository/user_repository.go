@@ -85,3 +85,33 @@ func (u *UserRepository) DeleteUserById(id int) {
 
 	defer rows.Close()
 }
+
+// func (u *UserRepository) UpdatePassword(email string) (email string, err error) {
+// 	// DELETE FROM products WHERE price = 10;
+// 	rows, err := u.db.Query(context.Background(), `
+// 		UPDATE users SET password = '' WHERE email = $1;
+// 	`, email)
+// 	if err != nil {
+// 		return email, err
+// 	}
+// 	return email
+// }
+
+func (u *UserRepository) GetUserByEmail(email string) (models.User, error) {
+	rows, err := u.db.Query(context.Background(), `
+		SELECT id, full_name, email, password, address, phone, pictures FROM users WHERE email = $1
+	`, email)
+
+	if err != nil {
+		return models.User{}, err
+	}
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+}
+
+func (u *UserRepository) UpdatePasswordByEmail(email string, newPassword string) error {
+	_, err := u.db.Query(context.Background(), `
+		UPDATE users SET password = $1 WHERE email = $2
+	`, newPassword, email)
+
+	return err
+}
