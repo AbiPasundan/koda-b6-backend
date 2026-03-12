@@ -1,11 +1,10 @@
 package service
 
 import (
+	"backend/internal/models"
 	"backend/internal/repository"
-	"fmt"
+	"math/rand"
 	"strconv"
-
-	"math/rand/v2"
 )
 
 // * RequestForgotPassword
@@ -29,22 +28,38 @@ func NewForgotPasswordService(fpRepo *repository.ForgotPasswordRepository, userR
 	}
 }
 
-func (f *ForgotPasswordService) RequestForgotPassword(email string) (string, error) {
-	if _, err := f.ForgotPasswordRepo.GetUserByEmail(email); err != nil {
+func (f *ForgotPasswordService) RequestForgotPassword(req models.JustEmail) (string, error) {
+	user, err := f.UserRepo.GetUserByEmail(req.Email)
+	if err != nil {
 		return "", err
 	}
-	code := strconv.Itoa(rand.IntN(999999))
-	fmt.Println("that is your code save it carefully", code)
-	f.ForgotPasswordRepo.CreateForgogtPasswordRequest(code)
+
+	code := strconv.Itoa(rand.Intn(999999))
+
+	_ = f.ForgotPasswordRepo.DeleteCode(user.Id)
+	err = f.ForgotPasswordRepo.CreateForgotPassword(user.Id, code)
+	if err != nil {
+		return "", err
+	}
+
 	return code, nil
 }
 
-func (f *ForgotPasswordService) ResetPassword(email string, code string, newPassword string) error {
-	_, err := f.ForgotPasswordRepo.GetUserByEmail(email)
+func (f *ForgotPasswordService) ResetPassword(req models.ResetPasswordInput) error {
+	user, err := f.UserRepo.GetUserByEmail(req.Email)
 	if err != nil {
 		return err
 	}
-	f.UserRepo.UpdatePasswordByEmail(email, newPassword)
-	f.ForgotPasswordRepo.DeleteDataByEmail(email)
-	return err
+
+	_, err = f.ForgotPasswordRepo.GetTokenByUserIdAndCode(user.Id, req.Code)
+	if err != nil {
+		return err
+	}
+
+	err = f.UserRepo.UpdatePasswordByEmail(req.Email, req.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	return f.ForgotPasswordRepo.DeleteCode(user.Id)
 }
