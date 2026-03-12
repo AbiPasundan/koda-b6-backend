@@ -1,2 +1,4 @@
 ALTER TABLE users
-DROP COLUMN test;
+DROP COLUMN IF EXISTS test;
+
+DROP TABLE IF EXISTS forgot_password;
