@@ -1,42 +1,42 @@
 package models
 
 type Product struct {
-	Id          int     `db:"id"`
-	Name        string  `db:"product_name"`
-	Description *string `db:"product_desc"`
-	Price       *int    `db:"price"`
-	Quantity    *int    `db:"quantity"`
-	Discount    *int    `db:"discount"`
+	Id          int     `json:"id" db:"id"`
+	Name        *string `json:"product_name" db:"product_name"`
+	Description *string `json:"product_desc" db:"product_desc"`
+	Price       *int    `json:"price" db:"price"`
+	Quantity    *int    `json:"quantity" db:"quantity"`
+	Discount    *int    `json:"discount" db:"discount"`
 }
 
 type Discount struct {
-	Id          int    `db:"discount_id"`
-	Rate        int    `db:"discount_rate"`
-	Description string `db:"description"`
-	FlashSale   string `db:"is_flash_sale"`
+	Id          int    `json:"discount_id" db:"discount_id"`
+	Rate        int    `json:"discount_rate" db:"discount_rate"`
+	Description string `json:"description" db:"description"`
+	FlashSale   string `json:"is_flash_sale" db:"is_flash_sale"`
 }
 
 type Category struct {
-	Id   int    `db:"category_id"`
-	Name string `db:"category_name"`
+	Id   int    `json:"category_id" db:"category_id"`
+	Name string `json:"category_name" db:"category_name"`
 }
 
 type ProductImages struct {
-	Images    int    `db:"product_images_id"`
-	ProductId int    `db:"product_id"`
-	Path      string `db:"path"`
+	Images    int    `json:"product_images_id" db:"product_images_id"`
+	ProductId int    `json:"product_id" db:"product_id"`
+	Path      string `json:"path" db:"path"`
 }
 
 type ProductSize struct {
-	Size      int    `db:"product_size_id"`
-	ProductId int    `db:"product_id"`
-	SizeName  string `db:"size_name"`
-	SizePrice int    `db:"size_price"`
+	Size      int    `json:"product_size_id" db:"product_size_id"`
+	ProductId int    `json:"product_id" db:"product_id"`
+	SizeName  string `json:"size_name" db:"size_name"`
+	SizePrice int    `json:"size_price" db:"size_price"`
 }
 
 type Variant struct {
-	VariantId   int    `db:"product_variant_id"`
-	ProductId   int    `db:"product_id"`
-	VariantName string `db:"variant_name"`
-	Price       string `db:"add_price"`
+	VariantId   int    `json:"product_variant_id" db:"product_variant_id"`
+	ProductId   int    `json:"product_id" db:"product_id"`
+	VariantName string `json:"variant_name" db:"variant_name"`
+	Price       string `json:"add_price" db:"add_price"`
 }
