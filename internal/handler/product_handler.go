@@ -94,12 +94,30 @@ func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
 }
 
 func (h *ProductHandler) AddProduct(ctx *gin.Context) {
-	godotenv.Load()
+	var newProducts models.Product
+
+	if err := ctx.ShouldBindJSON(&newProducts); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Something Went Wrong" + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+	createUser, err := h.ProductService.AddProduct(newProducts)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Internal Server Error" + err.Error(),
+			Results: nil,
+		})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, models.Response{
-		Success: false,
-		Message: "User Found:)))",
-		Results: "product",
+		Success: true,
+		Message: "Success Add Product",
+		Results: createUser,
 	})
 }
 
