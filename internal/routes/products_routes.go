@@ -12,6 +12,7 @@ func ProductRoutes(r *gin.Engine, h *handler.ProductHandler) {
 		admin.GET("/products", h.Product)
 		admin.GET("/products/:id", h.SearchProductById)
 		admin.PATCH("/products/:id", h.UpdateProduct)
+		admin.DELETE("/products/:id", h.DeleteProduct)
 		admin.POST("/products", h.AddProduct)
 	}
 }

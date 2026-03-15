@@ -45,7 +45,7 @@ func (p *ProductRepository) GetProductById(id int) (models.Product, error) {
 func (p *ProductRepository) AddProduct(product models.Product) (models.Product, error) {
 	query := `
 		INSERT INTO products (product_name, product_desc, price, quantity, discount)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id, product_name, product_desc, price, quantity, discount
 	`
 	rows, err := p.db.Query(context.Background(), query, product.Name, product.Description, product.Price, product.Quantity, product.Discount)
@@ -68,4 +68,18 @@ func (p *ProductRepository) UpdateProductById(id int, product models.Product) (m
 	}
 
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Product])
+}
+
+func (p *ProductRepository) DeleteProductById(id int) {
+	query := `
+		DELETE FROM products 
+		WHERE id = $1
+	`
+	p.db.Exec(context.Background(), query, id)
+	// rows, err := p.db.Query(context.Background(), query, product.Name, product.Description, product.Price, product.Quantity, product.Discount, id)
+	// if err != nil {
+	// 	return models.Product{}, err
+	// }
+
+	// return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Product])
 }

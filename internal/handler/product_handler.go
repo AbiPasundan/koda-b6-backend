@@ -160,3 +160,23 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 		Results: updatedProduct,
 	})
 }
+
+func (h *ProductHandler) DeleteProduct(ctx *gin.Context) {
+	i := ctx.Param("id")
+	id, err := strconv.Atoi(i)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Invalid id: " + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+	h.ProductService.DeleteProductById(id)
+
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: true,
+		Message: "Successfully Delete Product",
+	})
+
+}

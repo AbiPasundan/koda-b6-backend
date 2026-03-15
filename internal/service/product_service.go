@@ -30,3 +30,7 @@ func (p *ProductService) AddProduct(product models.Product) (models.Product, err
 func (p *ProductService) UpdateProductById(id int, product models.Product) (models.Product, error) {
 	return p.ProductRepo.UpdateProductById(id, product)
 }
+
+func (p *ProductService) DeleteProductById(id int) {
+	p.ProductRepo.DeleteProductById(id)
+}
