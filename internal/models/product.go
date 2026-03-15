@@ -6,7 +6,6 @@ type Product struct {
 	Description *string `db:"product_desc"`
 	Price       *int    `db:"price"`
 	Quantity    *int    `db:"quantity"`
-	Category    *int    `db:"product_category"`
 	Discount    *int    `db:"discount"`
 }
 

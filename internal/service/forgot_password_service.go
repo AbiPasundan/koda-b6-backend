@@ -44,22 +44,3 @@ func (f *ForgotPasswordService) RequestForgotPassword(req models.JustEmail) (str
 
 	return code, nil
 }
-
-func (f *ForgotPasswordService) ResetPassword(req models.ResetPasswordInput) error {
-	user, err := f.UserRepo.GetUserByEmail(req.Email)
-	if err != nil {
-		return err
-	}
-
-	_, err = f.ForgotPasswordRepo.GetTokenByUserIdAndCode(user.Id, req.Code)
-	if err != nil {
-		return err
-	}
-
-	err = f.UserRepo.UpdatePasswordByEmail(req.Email, req.NewPassword)
-	if err != nil {
-		return err
-	}
-
-	return f.ForgotPasswordRepo.DeleteCode(user.Id)
-}

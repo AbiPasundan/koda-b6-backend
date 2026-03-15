@@ -46,29 +46,3 @@ func (f *ForgotPasswordHandler) RequestForgotPassword(ctx *gin.Context) {
 		Results: code,
 	})
 }
-
-func (f *ForgotPasswordHandler) ResetPassword(ctx *gin.Context) {
-	var req models.ResetPasswordInput
-
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid request body: " + err.Error(),
-			Results: nil,
-		})
-		return
-	}
-
-	if err := f.ForgotPasswordService.ResetPassword(req); err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Failed to reset password: " + err.Error(),
-		})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: "Password has been reset successfully",
-	})
-}

@@ -141,5 +141,4 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 		Message: "Successfully Updated Product",
 		Results: updatedProduct,
 	})
-
 }

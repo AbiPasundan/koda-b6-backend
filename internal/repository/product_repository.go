@@ -18,7 +18,7 @@ func NewProductRepository(db *pgx.Conn) *ProductRepository {
 func (p *ProductRepository) GetAllProduct() ([]models.Product, error) {
 
 	rows, err := p.db.Query(context.Background(), `
-		select id, product_name, product_desc, price, quantity, product_category, discount from products;
+		select id, product_name, product_desc, price, quantity, discount from products;
 	`)
 
 	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.Product])
@@ -31,7 +31,7 @@ func (p *ProductRepository) GetAllProduct() ([]models.Product, error) {
 
 func (p *ProductRepository) GetProductById(id int) (models.Product, error) {
 	rows, err := p.db.Query(context.Background(), `
-		select id, product_name, product_desc, price, quantity, product_category, discount from products where id = $1
+		select id, product_name, product_desc, price, quantity, discount from products where id = $1
 	`, id)
 
 	if err != nil {
@@ -44,11 +44,11 @@ func (p *ProductRepository) GetProductById(id int) (models.Product, error) {
 
 func (p *ProductRepository) AddProduct(product models.Product) (models.Product, error) {
 	query := `
-		INSERT INTO products (product_name, product_desc, price, quantity, product_category, discount)
+		INSERT INTO products (product_name, product_desc, price, quantity, discount)
 		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id, product_name, product_desc, price, quantity, product_category, discount
+		RETURNING id, product_name, product_desc, price, quantity, discount
 	`
-	rows, err := p.db.Query(context.Background(), query, product.Name, product.Description, product.Price, product.Quantity, product.Category, product.Discount)
+	rows, err := p.db.Query(context.Background(), query, product.Name, product.Description, product.Price, product.Quantity, product.Discount)
 	if err != nil {
 		return models.Product{}, err
 	}
@@ -59,10 +59,10 @@ func (p *ProductRepository) AddProduct(product models.Product) (models.Product, 
 func (p *ProductRepository) UpdateProductById(id int, product models.Product) (models.Product, error) {
 	query := `
 		UPDATE products 
-		SET product_name = $1, product_desc = $2, price = $3, quantity = $4, product_category = $5, discount = $6 
-		WHERE id = $7 RETURNING id, product_name, product_desc, price, quantity, product_category, discount
+		SET product_name = $1, product_desc = $2, price = $3, quantity = $4, discount = $5 
+		WHERE id = $6 RETURNING id, product_name, product_desc, price, quantity, discount
 	`
-	rows, err := p.db.Query(context.Background(), query, product.Name, product.Description, product.Price, product.Quantity, product.Category, product.Discount, id)
+	rows, err := p.db.Query(context.Background(), query, product.Name, product.Description, product.Price, product.Quantity, product.Discount, id)
 	if err != nil {
 		return models.Product{}, err
 	}
