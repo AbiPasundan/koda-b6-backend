@@ -1,3 +1,6 @@
+# http test
+## users
+
 ### get all users
 GET http://localhost:8888/users
 
@@ -33,17 +36,77 @@ Content-Type: application/json
 ### delete user by id
 DELETE http://localhost:8888/users/11
 
-	# r.GET("/", h.Home)
-	# r.GET("/users/:id", h.GetUserById)
-	# r.POST("/users", h.AddUser)
-	# r.PATCH("/users/:id", h.UpdateUser)
-	# r.DELETE("/users/:id", h.DeleteUser)
+## products 
 
-###
-# {
-#   "product_name": "test from api",
-#   "product_desc": "product_desc",
-#   "price": 1001,
-#   "quantity": 5,
-#   "discount" : 1
-# }
+### get all product
+GET http://localhost:8888/admin/products
+
+### get product by id
+GET http://localhost:8888/admin/products/1
+
+### add products
+POST http://localhost:8888/admin/products
+Content-Type: application/json
+
+{
+  "full_name": "no name",
+  "email": "admin@mailcom",
+  "password": "admin#123",
+  "address": "Mahasaraja Depok",
+  "phone": "08123456789",
+  "pictures": "images/path/picture.jpg"
+}
+
+### edit product
+PATCH http://localhost:8888/admin/products/1
+Content-Type: application/json
+
+{
+  "full_name": "aDMIN",
+  "email": "bukanadmin@mailcom",
+  "password": "admin#123ABC",
+  "address": "Maharaja Depok",
+  "phone": "08123456710",
+  "pictures": "images/path/pictureu.jpg",
+}
+
+### delete product by id
+DELETE http://localhost:8888/admin/products/11
+
+## category
+
+### get all category
+GET http://localhost:8888/admin/category
+
+### get category by id
+GET http://localhost:8888/admin/category/1
+
+### add category
+POST http://localhost:8888/admin/category
+Content-Type: application/json
+
+{
+  "full_name": "no name",
+  "email": "admin@mailcom",
+  "password": "admin#123",
+  "address": "Mahasaraja Depok",
+  "phone": "08123456789",
+  "pictures": "images/path/picture.jpg"
+}
+
+### edit category
+PATCH http://localhost:8888/admin/category/1
+Content-Type: application/json
+
+{
+  "full_name": "aDMIN",
+  "email": "bukanadmin@mailcom",
+  "password": "admin#123ABC",
+  "address": "Maharaja Depok",
+  "phone": "08123456710",
+  "pictures": "images/path/pictureu.jpg",
+}
+
+### delete category by id
+DELETE http://localhost:8888/admin/category/11
+
