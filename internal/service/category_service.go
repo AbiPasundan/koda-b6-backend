@@ -31,6 +31,6 @@ func (p *CategoryService) UpdateCategoryById(id int, Category models.Category) (
 	return p.CategoryRepo.UpdateCategoryById(id, Category)
 }
 
-func (p *CategoryService) DeleteCategoryById(id int) {
-	p.CategoryRepo.DeleteCategoryById(id)
+func (p *CategoryService) DeleteCategoryById(id int) error {
+	return p.CategoryRepo.DeleteCategoryById(id)
 }

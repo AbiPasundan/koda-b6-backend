@@ -4,6 +4,7 @@ import (
 	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -130,13 +131,21 @@ func (h *CategoryHandler) UpdateCategory(ctx *gin.Context) {
 func (h *CategoryHandler) DeleteCategory(ctx *gin.Context) {
 	id, ok := helper.GetID(ctx)
 	if !ok {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Invalid ID format",
+		})
 		return
 	}
-	h.CategoryService.DeleteCategoryById(id)
+
+	err := h.CategoryService.DeleteCategoryById(id)
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
 
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "Successfully Delete category",
+		Message: fmt.Sprintf("Success delete category with id: %d", id),
+		Results: nil,
 	})
-
 }

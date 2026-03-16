@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"backend/internal/models"
 
@@ -68,14 +69,17 @@ func (u *CategoryRepository) UpdateCategoryById(id int, category models.Category
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Category])
 }
 
-func (u *CategoryRepository) DeleteCategoryById(id int) {
-	rows, err := u.db.Query(context.Background(), `
-		DELETE FROM category WHERE category_id = $1;
-	`, id)
+func (u *CategoryRepository) DeleteCategoryById(id int) error {
+	query := `DELETE FROM products WHERE id = $1`
 
+	result, err := u.db.Exec(context.Background(), query, id)
 	if err != nil {
-		return
+		return err
 	}
 
-	defer rows.Close()
+	if result.RowsAffected() == 0 {
+		return errors.New("no category found with this id")
+	}
+
+	return nil
 }
