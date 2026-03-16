@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
 	"net/http"
@@ -62,12 +63,7 @@ func (h *CategoryHandler) SearchCategoryById(ctx *gin.Context) {
 
 	var category models.Category
 	category, err = h.CategoryService.GetCategoryById(id)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Something Gone Wrong : " + err.Error(),
-			Results: nil,
-		})
+	if helper.NotFoundError(ctx, err) {
 		return
 	}
 
