@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
 	"net/http"
@@ -51,6 +52,7 @@ func (h *UserHandler) Home(ctx *gin.Context) {
 //	@Router			/users/{id} [get]
 func (h *UserHandler) GetUserById(ctx *gin.Context) {
 	i := ctx.Param("id")
+	helper.GetId(i)
 	id, err := strconv.Atoi(i)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
@@ -61,12 +63,7 @@ func (h *UserHandler) GetUserById(ctx *gin.Context) {
 		return
 	}
 	user, err := h.UserService.GetUserById(id)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, models.Response{
-			Success: false,
-			Message: "404 Not Found " + err.Error(),
-			Results: nil,
-		})
+	if helper.NotFoundError(ctx, err) {
 		return
 	}
 	ctx.JSON(http.StatusOK, models.Response{
