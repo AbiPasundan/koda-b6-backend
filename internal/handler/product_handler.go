@@ -3,13 +3,10 @@ package handler
 import (
 	"backend/internal/models"
 	"backend/internal/service"
-	"context"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 )
 
 type ProductHandler struct {
@@ -33,17 +30,6 @@ func NewProductHandler(service *service.ProductService) *ProductHandler {
 //	@Failure		500	{object}	models.Response
 //	@Router			/ [get]
 func (h *ProductHandler) Product(ctx *gin.Context) {
-	godotenv.Load()
-	conn, err := pgx.Connect(context.Background(), "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Something went wrong please try again : " + err.Error(),
-			Results: nil,
-		})
-		return
-	}
-	defer conn.Close(context.Background())
 	product, err := h.ProductService.GetProduct()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, models.Response{
@@ -57,12 +43,11 @@ func (h *ProductHandler) Product(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
 		Message: "Success get Data Product",
-		Results: product,
+		Results: &product,
 	})
 }
 
 func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
-	godotenv.Load()
 
 	i := ctx.Param("id")
 	id, err := strconv.Atoi(i)
@@ -89,7 +74,7 @@ func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
 		Message: "User Found:)))",
-		Results: product,
+		Results: &product,
 	})
 }
 
@@ -122,7 +107,6 @@ func (h *ProductHandler) AddProduct(ctx *gin.Context) {
 }
 
 func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
-	godotenv.Load()
 	var product models.Product
 
 	i := ctx.Param("id")

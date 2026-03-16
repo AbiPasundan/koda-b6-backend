@@ -1,16 +1,16 @@
-FROM golang:1.25.0-alpine
+FROM golang:1.25.0-alpine AS build
 
 WORKDIR /workspace
 
-COPY *go* .
+COPY . .
 
-RUN go tidy
+RUN go mod tidy
 
-RUN go build -o test main.go
+RUN go build -o test ./cmd/main.go
 
 ENTRYPOINT ["/workspace/test"]
 
-FROM alpine:latest
+FROM golang:1.25.0-alpine
 
 WORKDIR /app
 
@@ -18,5 +18,4 @@ COPY --from=build /workspace/test /workspace/test /app/
 
 ENTRYPOINT ["/app/test"]
 
-
-# kapai ./
+# docker run --rm --network=server-name migrate/migrate:latest -source github:// link/ghcr/project/migration -database postgresql://postgres:1@localhost:5432?sslmode=disable down 1
