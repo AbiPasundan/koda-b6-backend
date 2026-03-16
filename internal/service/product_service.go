@@ -31,6 +31,6 @@ func (p *ProductService) UpdateProductById(id int, product models.Product) (mode
 	return p.ProductRepo.UpdateProductById(id, product)
 }
 
-func (p *ProductService) DeleteProductById(id int) {
-	p.ProductRepo.DeleteProductById(id)
+func (p *ProductService) DeleteProductById(id int) error {
+	return p.ProductRepo.DeleteProductById(id)
 }

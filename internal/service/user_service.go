@@ -27,8 +27,8 @@ func (u *UserService) AddUser(user models.User) (models.User, error) {
 	return u.UserRepo.AddUser(user)
 }
 
-func (u *UserService) DeleteUserById(id int) {
-	u.UserRepo.DeleteUserById(id)
+func (u *UserService) DeleteUserById(id int) error {
+	return u.UserRepo.DeleteUserById(id)
 }
 
 func (u *UserService) UpdateUserById(id int, user models.User) {

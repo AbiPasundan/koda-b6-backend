@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"backend/internal/models"
 
@@ -74,16 +75,19 @@ func (u *UserRepository) UpdateUserById(id int, user models.User) (models.User, 
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
 }
 
-func (u *UserRepository) DeleteUserById(id int) {
-	rows, err := u.db.Query(context.Background(), `
-		DELETE FROM users WHERE id = $1;
-	`, id)
+func (u *UserRepository) DeleteUserById(id int) error {
+	query := `DELETE FROM users WHERE id = $1`
 
+	result, err := u.db.Exec(context.Background(), query, id)
 	if err != nil {
-		return
+		return err
 	}
 
-	defer rows.Close()
+	if result.RowsAffected() == 0 {
+		return errors.New("no user found with this id")
+	}
+
+	return nil
 }
 
 // func (u *UserRepository) UpdatePassword(email string) (email string, err error) {
