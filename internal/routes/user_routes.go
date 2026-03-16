@@ -7,7 +7,7 @@ import (
 )
 
 func UserRoutes(r *gin.Engine, h *handler.UserHandler) {
-	r.GET("/", h.Home)
+	r.GET("/users", h.Home)
 	r.GET("/users/:id", h.GetUserById)
 	r.POST("/users", h.AddUser)
 	r.PATCH("/users/:id", h.UpdateUser)

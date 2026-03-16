@@ -144,15 +144,6 @@ func (h *UserHandler) DeleteUser(ctx *gin.Context) {
 }
 
 func (h *UserHandler) UpdateUser(ctx *gin.Context) {
-	var updateUser models.User
-	if err := ctx.ShouldBindJSON(&updateUser); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Hmmm eror naon ieu nya???" + err.Error(),
-			Results: nil,
-		})
-	}
-
 	i := ctx.Param("id")
 	id, err := strconv.Atoi(i)
 	if err != nil {
@@ -163,6 +154,16 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 		})
 		return
 	}
+
+	var updateUser models.User
+	if err := ctx.ShouldBindJSON(&updateUser); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Hmmm eror naon ieu nya???" + err.Error(),
+			Results: nil,
+		})
+	}
+
 	createUser, err := h.UserService.AddUser(updateUser)
 	h.UserService.UpdateUserById(id, createUser)
 	ctx.JSON(http.StatusOK, models.Response{
