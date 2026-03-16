@@ -5,7 +5,6 @@ import (
 	"backend/internal/models"
 	"backend/internal/service"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -98,14 +97,8 @@ func (h *CategoryHandler) AddCategory(ctx *gin.Context) {
 func (h *CategoryHandler) UpdateCategory(ctx *gin.Context) {
 	var Category models.Category
 
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid id: " + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
 
@@ -135,14 +128,8 @@ func (h *CategoryHandler) UpdateCategory(ctx *gin.Context) {
 }
 
 func (h *CategoryHandler) DeleteCategory(ctx *gin.Context) {
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid id: " + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
 	h.CategoryService.DeleteCategoryById(id)

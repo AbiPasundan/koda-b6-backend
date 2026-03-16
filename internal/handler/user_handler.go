@@ -5,7 +5,6 @@ import (
 	"backend/internal/models"
 	"backend/internal/service"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -51,14 +50,8 @@ func (h *UserHandler) Home(ctx *gin.Context) {
 //	@Failure		404	{object}	models.Response
 //	@Router			/users/{id} [get]
 func (h *UserHandler) GetUserById(ctx *gin.Context) {
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid Id" + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
 	user, err := h.UserService.GetUserById(id)
@@ -121,14 +114,8 @@ func (h *UserHandler) AddUser(ctx *gin.Context) {
 //	@Failure		404	{object}	models.Response
 //	@Router			/users/{id} [delete]
 func (h *UserHandler) DeleteUser(ctx *gin.Context) {
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid Id" + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
 	h.UserService.DeleteUserById(id)
@@ -140,14 +127,8 @@ func (h *UserHandler) DeleteUser(ctx *gin.Context) {
 }
 
 func (h *UserHandler) UpdateUser(ctx *gin.Context) {
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid Id" + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
 
@@ -155,13 +136,23 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&updateUser); err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "Hmmm eror naon ieu nya???" + err.Error(),
+			Message: "Something wrong" + err.Error(),
 			Results: nil,
 		})
 	}
 
 	createUser, err := h.UserService.AddUser(updateUser)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Failed to update Category: " + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+
 	h.UserService.UpdateUserById(id, createUser)
+
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
 		Message: "Succes Updated User",

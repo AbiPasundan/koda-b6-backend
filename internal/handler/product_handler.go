@@ -5,7 +5,6 @@ import (
 	"backend/internal/models"
 	"backend/internal/service"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -50,19 +49,13 @@ func (h *ProductHandler) Product(ctx *gin.Context) {
 
 func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
 
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid ID : " + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
 
 	var product models.Product
-	product, err = h.ProductService.GetProductById(id)
+	product, err := h.ProductService.GetProductById(id)
 	if helper.NotFoundError(ctx, err) {
 		return
 	}
@@ -105,17 +98,10 @@ func (h *ProductHandler) AddProduct(ctx *gin.Context) {
 func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 	var product models.Product
 
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid id: " + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
-
 	if err := ctx.ShouldBindJSON(&product); err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
@@ -142,14 +128,8 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 }
 
 func (h *ProductHandler) DeleteProduct(ctx *gin.Context) {
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid id: " + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
 	h.ProductService.DeleteProductById(id)
