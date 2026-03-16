@@ -140,20 +140,16 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 
 	var updateUser models.User
 	if err := ctx.ShouldBindJSON(&updateUser); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
+		ctx.JSON(http.StatusInternalServerError, models.Response{
 			Success: false,
 			Message: "Something wrong" + err.Error(),
 			Results: nil,
 		})
+		return
 	}
 
 	createUser, err := h.UserService.AddUser(updateUser)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Failed to update Category: " + err.Error(),
-			Results: nil,
-		})
+	if helper.NotFoundError(ctx, err) {
 		return
 	}
 
