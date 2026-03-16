@@ -112,12 +112,7 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 		return
 	}
 	updatedProduct, err := h.ProductService.UpdateProductById(id, product)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Failed to update product: " + err.Error(),
-			Results: nil,
-		})
+	if helper.NotFoundError(ctx, err) {
 		return
 	}
 
