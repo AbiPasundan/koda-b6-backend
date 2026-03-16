@@ -5,6 +5,8 @@ import (
 	container "backend/internal/di"
 	"backend/internal/middleware"
 	"backend/internal/routes"
+	"fmt"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -34,7 +36,7 @@ func main() {
 	routes.AuthRoutes(r, userContainer.ForgotPasswordHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Run("localhost:8889")
+	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 
 	// r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
