@@ -57,16 +57,10 @@ func (u *UserRepository) AddUser(user models.User) (models.User, error) {
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
 }
 
-// update
 func (u *UserRepository) UpdateUserById(id int, user models.User) (models.User, error) {
-	// note jika update harus kirim model untuk update data
 	rows, err := u.db.Query(context.Background(), `
 		UPDATE users SET full_name = $1, email = $2, password = $3, address = $4, phone = $5, pictures = $6 WHERE id = $7 RETURNING id, full_name, email, password, address, phone, pictures
 	`, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures, id)
-
-	// rows, err := u.db.Query(context.Background(), `
-	// 	UPDATE users SET full_name = $1, email = $2, password = $3, address = $4, phone = $5, pictures = $6 WHERE id = $7 RETURNING id, full_name, email, password, address, phone, pictures
-	// `, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures, id)
 
 	if err != nil {
 		return models.User{}, err
@@ -89,17 +83,6 @@ func (u *UserRepository) DeleteUserById(id int) error {
 
 	return nil
 }
-
-// func (u *UserRepository) UpdatePassword(email string) (email string, err error) {
-// 	// DELETE FROM products WHERE price = 10;
-// 	rows, err := u.db.Query(context.Background(), `
-// 		UPDATE users SET password = '' WHERE email = $1;
-// 	`, email)
-// 	if err != nil {
-// 		return email, err
-// 	}
-// 	return email
-// }
 
 func (u *UserRepository) GetUserByEmail(email string) (models.User, error) {
 	rows, err := u.db.Query(context.Background(), `
