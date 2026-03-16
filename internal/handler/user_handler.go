@@ -52,7 +52,6 @@ func (h *UserHandler) Home(ctx *gin.Context) {
 //	@Router			/users/{id} [get]
 func (h *UserHandler) GetUserById(ctx *gin.Context) {
 	i := ctx.Param("id")
-	helper.GetId(i)
 	id, err := strconv.Atoi(i)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{

@@ -49,20 +49,13 @@ func (h *CategoryHandler) Category(ctx *gin.Context) {
 }
 
 func (h *CategoryHandler) SearchCategoryById(ctx *gin.Context) {
-
-	i := ctx.Param("id")
-	id, err := strconv.Atoi(i)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid ID : " + err.Error(),
-			Results: nil,
-		})
+	id, ok := helper.GetID(ctx)
+	if !ok {
 		return
 	}
 
 	var category models.Category
-	category, err = h.CategoryService.GetCategoryById(id)
+	category, err := h.CategoryService.GetCategoryById(id)
 	if helper.NotFoundError(ctx, err) {
 		return
 	}
