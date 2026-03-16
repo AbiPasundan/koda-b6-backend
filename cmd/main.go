@@ -48,3 +48,19 @@ func main() {
 // migrate -source file://./migrations -database postgres://postgres:1@localhost:5432/yuuke?sslmode=disable up
 
 // goseeder seed -s file://./seeder -d postgres://postgres:1@localhost:5432/postgres?sslmode=disable
+
+//  docker pull ghcr.io/abipasundan/koda-b6-react:latest
+//  docker rm -f web-wildan
+//  docker run -d --network pman_web -p  20601:80 --name web-wildan ghcr.io/abipasundan/koda-b6-react:latest
+
+//  cd server-reza
+//  docker compose pull
+//  docker run --rm --network=server-reza_default migrate/migrate:latest -source github:// rezafauzan:${{ secrets.GITHUB_TOKEN }}@rezafauzan/koda-b6-backend/migrations -database postgresql://postgres:1@pg:5432/postgres?sslmode=disable up
+//  docker compose up backend -d
+
+//  .github
+
+//  docker build -t ghcr.io/YOUR_GITHUB_USERNAME/IMAGE_NAME:latest .
+//  echo YOUR_PAT | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+
+// docker run --rm --network=server-wildan_default migrate/migrate:latest source github://abipasundan/koda-b6-backend/migrations -database postgresql://postgres:1@pg:5432/postgres?sslmode=disable up
