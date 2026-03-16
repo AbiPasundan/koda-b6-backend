@@ -28,12 +28,11 @@ func main() {
 	r.Use(middleware.CORSMiddleware())
 
 	userContainer := container.BuildContainer()
-	// productContainer := container.ProductsContainer()
-	// forgotPasswordContainer := container.ForgotPasswordContainer()
 
 	routes.UserRoutes(r, userContainer.UserHandler)
 	routes.ProductRoutes(r, userContainer.ProductHandler)
 	routes.AuthRoutes(r, userContainer.ForgotPasswordHandler)
+	routes.CategoryRoutes(r, userContainer.CategoryHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))

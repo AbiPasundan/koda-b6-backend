@@ -14,6 +14,7 @@ import (
 type Container struct {
 	UserHandler           *handler.UserHandler
 	ProductHandler        *handler.ProductHandler
+	CategoryHandler       *handler.CategoryHandler
 	ForgotPasswordHandler *handler.ForgotPasswordHandler
 }
 
@@ -37,9 +38,14 @@ func BuildContainer() *Container {
 	productService := service.NewProductService(productRepo)
 	productHandler := handler.NewProductHandler(productService)
 
+	categoryRepo := repository.NewCategoryRepository(conn)
+	categoryService := service.NewCategoryService(categoryRepo)
+	categoryHandler := handler.NewCategoryHandler(categoryService)
+
 	return &Container{
-		UserHandler:    userHandler,
-		ProductHandler: productHandler,
+		UserHandler:     userHandler,
+		ProductHandler:  productHandler,
+		CategoryHandler: categoryHandler,
 	}
 }
 
