@@ -16,11 +16,6 @@ type Discount struct {
 	FlashSale   string `json:"is_flash_sale" db:"is_flash_sale"`
 }
 
-type Category struct {
-	Id   int    `json:"category_id" db:"category_id"`
-	Name string `json:"category_name" db:"category_name"`
-}
-
 type ProductImages struct {
 	Images    int    `json:"product_images_id" db:"product_images_id"`
 	ProductId int    `json:"product_id" db:"product_id"`
