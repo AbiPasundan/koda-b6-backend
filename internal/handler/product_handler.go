@@ -4,6 +4,7 @@ import (
 	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -132,11 +133,16 @@ func (h *ProductHandler) DeleteProduct(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-	h.ProductService.DeleteProductById(id)
+
+	err := h.ProductService.DeleteProductById(id)
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
 
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "Successfully Delete Product",
+		Message: fmt.Sprintf("Success delete product with id: %d", id),
+		Results: nil,
 	})
 
 }

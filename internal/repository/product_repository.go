@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/internal/models"
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -70,16 +71,17 @@ func (p *ProductRepository) UpdateProductById(id int, product models.Product) (m
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Product])
 }
 
-func (p *ProductRepository) DeleteProductById(id int) {
-	query := `
-		DELETE FROM products 
-		WHERE id = $1
-	`
-	p.db.Exec(context.Background(), query, id)
-	// rows, err := p.db.Query(context.Background(), query, product.Name, product.Description, product.Price, product.Quantity, product.Discount, id)
-	// if err != nil {
-	// 	return models.Product{}, err
-	// }
+func (p *ProductRepository) DeleteProductById(id int) error {
+	query := `DELETE FROM products WHERE id = $1`
 
-	// return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Product])
+	result, err := p.db.Exec(context.Background(), query, id)
+	if err != nil {
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return errors.New("no product found with this id")
+	}
+
+	return nil
 }

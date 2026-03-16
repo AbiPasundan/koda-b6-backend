@@ -4,6 +4,7 @@ import (
 	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -118,12 +119,17 @@ func (h *UserHandler) DeleteUser(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-	h.UserService.DeleteUserById(id)
+	err := h.UserService.DeleteUserById(id)
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
+
 	ctx.JSON(http.StatusOK, models.Response{
 		Success: true,
-		Message: "Succes delete user with id : ",
-		Results: "result",
+		Message: fmt.Sprintf("Success delete user with id: %d", id),
+		Results: nil,
 	})
+
 }
 
 func (h *UserHandler) UpdateUser(ctx *gin.Context) {
