@@ -32,38 +32,20 @@ func NewProductHandler(service *service.ProductService) *ProductHandler {
 //	@Router			/ [get]
 func (h *ProductHandler) Product(ctx *gin.Context) {
 	product, err := h.ProductService.GetProduct()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Something went wrong please try again : " + err.Error(),
-			Results: nil,
-		})
+	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: "Success get Data Product",
-		Results: &product,
-	})
+	helper.ResponseOk(ctx, "Success get Data Product", &product)
 }
 
 func (h *ProductHandler) ProductHome(ctx *gin.Context) {
 	product, err := h.ProductService.GetProductHome()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Something went wrong please try again : " + err.Error(),
-			Results: nil,
-		})
+	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: "Success get Data Product",
-		Results: &product,
-	})
+	helper.ResponseOk(ctx, "Success get Data Product", &product)
 }
 
 func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
