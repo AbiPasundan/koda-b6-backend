@@ -7,6 +7,7 @@ type AuthLogin struct {
 }
 
 type AuthRegister struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Full_Name string `json:"full_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
 }
