@@ -6,6 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthRoutes(r *gin.Engine, h *handler.ForgotPasswordHandler) {
-	r.GET("/auth/forgotpassword", h.RequestForgotPassword)
+func AuthRoutes(r *gin.Engine, h *handler.AuthHandler) {
+	r.GET("/register", h.Register)
 }
