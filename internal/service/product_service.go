@@ -38,3 +38,7 @@ func (p *ProductService) DeleteProductById(id int) error {
 func (p *ProductService) GetProductHome() ([]models.ProductHome, error) {
 	return p.ProductRepo.GetAllProductHome()
 }
+
+func (p *ProductService) ProductReview() ([]models.ReviewProduct, error) {
+	return p.ProductRepo.ProductReview()
+}
