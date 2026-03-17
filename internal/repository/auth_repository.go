@@ -15,7 +15,7 @@ func NewRepository(db *pgx.Conn) *AuthRepository {
 	return &AuthRepository{db: db}
 }
 
-func (u *CategoryRepository) FindEmail(email string) ([]models.AuthLogin, error) {
+func (u *AuthRepository) FindEmail(email string) ([]models.AuthLogin, error) {
 
 	rows, err := u.db.Query(context.Background(), `
 		SELECT users.full_name, users.email
