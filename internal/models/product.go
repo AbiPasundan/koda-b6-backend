@@ -44,3 +44,10 @@ type ProductHome struct {
 	Ratings     *int    `json:"ratings" db:"ratings"`
 	Path        *string `json:"path" db:"path"`
 }
+
+type ReviewProduct struct {
+	UserName string  `json:"full_name" db:"full_name"`
+	Pictures *string `json:"pictures" db:"pictures"`
+	Message  *string `json:"messages" db:"messages"`
+	Rating   *int    `json:"ratings" db:"ratings"`
+}
