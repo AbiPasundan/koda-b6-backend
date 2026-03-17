@@ -49,12 +49,11 @@ POST http://localhost:8888/admin/products
 Content-Type: application/json
 
 {
-  "full_name": "no name",
-  "email": "admin@mailcom",
-  "password": "admin#123",
-  "address": "Mahasaraja Depok",
-  "phone": "08123456789",
-  "pictures": "images/path/picture.jpg"
+  "product_name": "juice",
+  "product_desc": "Juice Flavour",
+  "price":   10000,
+  "quantity":100,
+  "discount":1000,
 }
 
 ### edit product
@@ -62,12 +61,11 @@ PATCH http://localhost:8888/admin/products/1
 Content-Type: application/json
 
 {
-  "full_name": "aDMIN",
-  "email": "bukanadmin@mailcom",
-  "password": "admin#123ABC",
-  "address": "Maharaja Depok",
-  "phone": "08123456710",
-  "pictures": "images/path/pictureu.jpg",
+  "product_name": "Water",
+  "product_desc": "Mineral Water",
+  "price":   1000,
+  "quantity":240,
+  "discount":1000,
 }
 
 ### delete product by id
@@ -86,12 +84,7 @@ POST http://localhost:8888/admin/category
 Content-Type: application/json
 
 {
-  "full_name": "no name",
-  "email": "admin@mailcom",
-  "password": "admin#123",
-  "address": "Mahasaraja Depok",
-  "phone": "08123456789",
-  "pictures": "images/path/picture.jpg"
+  "category_name": "no name"
 }
 
 ### edit category
@@ -99,12 +92,7 @@ PATCH http://localhost:8888/admin/category/1
 Content-Type: application/json
 
 {
-  "full_name": "aDMIN",
-  "email": "bukanadmin@mailcom",
-  "password": "admin#123ABC",
-  "address": "Maharaja Depok",
-  "phone": "08123456710",
-  "pictures": "images/path/pictureu.jpg",
+  "category_name": "food"
 }
 
 ### delete category by id
