@@ -48,5 +48,5 @@ jobs:
           script: |
             cd server-wildan
             docker compose pull
-            docker run --rm --network=server-wildan_default migrate/migrate:latest -source github://abipasundan:${{ secrets.GITHUB_TOKEN }}@abipasundan/koda-b6-backend/migrations -database postgresql://postgres:1@pg:5432/postgres?sslmode=disable up
+            docker run --rm --network=server-wildan_default migrate/migrate:latest -source github://abipasundan:${{ secrets.GITHUB_TOKEN }}@abipasundan/koda-b6-backend/migrations -database postgresql://yuuke:1@pg:5432/yuuke?sslmode=disable up
             docker compose up backend -d
