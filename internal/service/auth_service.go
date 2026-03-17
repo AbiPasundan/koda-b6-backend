@@ -15,7 +15,7 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 	}
 }
 
-func (p *AuthService) FindEmail(email string) ([]models.AuthLogin, error) {
+func (p *AuthService) FindEmail(email string) ([]models.User, error) {
 	return p.AuthRepo.FindEmail(email)
 }
 

@@ -7,5 +7,6 @@ import (
 )
 
 func AuthRoutes(r *gin.Engine, h *handler.AuthHandler) {
-	r.GET("/register", h.Register)
+	r.POST("/register", h.Register)
+	r.POST("/login", h.Login)
 }
