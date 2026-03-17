@@ -20,3 +20,29 @@ func NotFoundError(ctx *gin.Context, err error) bool {
 
 	return false
 }
+
+func InternalServerError(ctx *gin.Context, message string, result any, err error) bool {
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: message + err.Error(),
+			Results: result,
+		})
+		return true
+	}
+
+	return false
+}
+
+func BadRequest(ctx *gin.Context, message string, result any, err error) bool {
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, models.Response{
+			Success: false,
+			Message: "Something Went Wrong " + err.Error(),
+			Results: result,
+		})
+		return true
+	}
+
+	return false
+}

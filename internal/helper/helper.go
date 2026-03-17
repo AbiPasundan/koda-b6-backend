@@ -24,3 +24,11 @@ func GetID(ctx *gin.Context) (int, bool) {
 
 	return id, true
 }
+
+func ResponseOk(ctx *gin.Context, message string, result any) {
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: true,
+		Message: message,
+		Results: result,
+	})
+}

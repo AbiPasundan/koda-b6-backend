@@ -70,29 +70,38 @@ func (h *CategoryHandler) SearchCategoryById(ctx *gin.Context) {
 func (h *CategoryHandler) AddCategory(ctx *gin.Context) {
 	var newCategory models.Category
 
-	if err := ctx.ShouldBindJSON(&newCategory); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Something Went Wrong" + err.Error(),
-			Results: nil,
-		})
+	err := ctx.ShouldBindJSON(&newCategory)
+	badReq := helper.BadRequest(ctx, "Invalid request body", nil, err)
+	if badReq {
 		return
 	}
+	// if err := ctx.ShouldBindJSON(&newCategory); err != nil {
+	// 	ctx.JSON(http.StatusBadRequest, models.Response{
+	// 		Success: false,
+	// 		Message: "Something Went Wrong " + err.Error(),
+	// 		Results: nil,
+	// 	})
+	// 	return
+	// }
 	createCategory, err := h.CategoryService.AddCategory(newCategory)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Internal Server Error" + err.Error(),
-			Results: nil,
-		})
+	serverInternal := helper.InternalServerError(ctx, "Internal Server Error", createCategory, err)
+	if serverInternal {
 		return
 	}
-
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: "Success Add Category",
-		Results: createCategory,
-	})
+	// if err != nil {
+	// 	ctx.JSON(http.StatusInternalServerError, models.Response{
+	// 		Success: false,
+	// 		Message: "Internal Server Error" + err.Error(),
+	// 		Results: nil,
+	// 	})
+	// 	return
+	// }
+	helper.ResponseOk(ctx, "Success Add Category", createCategory)
+	// ctx.JSON(http.StatusOK, models.Response{
+	// 	Success: true,
+	// 	Message: "Success Add Category",
+	// 	Results: createCategory,
+	// })
 }
 
 func (h *CategoryHandler) UpdateCategory(ctx *gin.Context) {
