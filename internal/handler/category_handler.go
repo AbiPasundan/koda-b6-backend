@@ -5,7 +5,6 @@ import (
 	"backend/internal/models"
 	"backend/internal/service"
 	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,20 +31,12 @@ func NewCategoryHandler(service *service.CategoryService) *CategoryHandler {
 //	@Router			/ [get]
 func (h *CategoryHandler) Category(ctx *gin.Context) {
 	category, err := h.CategoryService.GetCategory()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Something went wrong please try again : " + err.Error(),
-			Results: nil,
-		})
+	statusInternal := helper.InternalServerError(ctx, "Internal Server Error", category, err)
+	if statusInternal {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: "List of Category",
-		Results: &category,
-	})
+	helper.ResponseOk(ctx, "Success get All Data Category", &category)
 }
 
 func (h *CategoryHandler) SearchCategoryById(ctx *gin.Context) {
@@ -60,11 +51,7 @@ func (h *CategoryHandler) SearchCategoryById(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: "User Found:)))",
-		Results: &category,
-	})
+	helper.ResponseOk(ctx, "Success get Data Category", &category)
 }
 
 func (h *CategoryHandler) AddCategory(ctx *gin.Context) {
@@ -75,33 +62,12 @@ func (h *CategoryHandler) AddCategory(ctx *gin.Context) {
 	if badReq {
 		return
 	}
-	// if err := ctx.ShouldBindJSON(&newCategory); err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, models.Response{
-	// 		Success: false,
-	// 		Message: "Something Went Wrong " + err.Error(),
-	// 		Results: nil,
-	// 	})
-	// 	return
-	// }
 	createCategory, err := h.CategoryService.AddCategory(newCategory)
 	serverInternal := helper.InternalServerError(ctx, "Internal Server Error", createCategory, err)
 	if serverInternal {
 		return
 	}
-	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, models.Response{
-	// 		Success: false,
-	// 		Message: "Internal Server Error" + err.Error(),
-	// 		Results: nil,
-	// 	})
-	// 	return
-	// }
 	helper.ResponseOk(ctx, "Success Add Category", createCategory)
-	// ctx.JSON(http.StatusOK, models.Response{
-	// 	Success: true,
-	// 	Message: "Success Add Category",
-	// 	Results: createCategory,
-	// })
 }
 
 func (h *CategoryHandler) UpdateCategory(ctx *gin.Context) {
@@ -112,38 +78,22 @@ func (h *CategoryHandler) UpdateCategory(ctx *gin.Context) {
 		return
 	}
 
-	if err := ctx.ShouldBindJSON(&Category); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid request body: " + err.Error(),
-			Results: nil,
-		})
-		return
-	}
-	updatedCategory, err := h.CategoryService.UpdateCategoryById(id, Category)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.Response{
-			Success: false,
-			Message: "Failed to update Category: " + err.Error(),
-			Results: nil,
-		})
+	badRed := ctx.ShouldBindJSON(&Category)
+	if helper.BadRequest(ctx, "Invalid request body", nil, badRed) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: "Successfully Updated Category",
-		Results: updatedCategory,
-	})
+	updatedCategory, err := h.CategoryService.UpdateCategoryById(id, Category)
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
+
+	helper.ResponseOk(ctx, "Successfully Updated Category", updatedCategory)
 }
 
 func (h *CategoryHandler) DeleteCategory(ctx *gin.Context) {
 	id, ok := helper.GetID(ctx)
 	if !ok {
-		ctx.JSON(http.StatusBadRequest, models.Response{
-			Success: false,
-			Message: "Invalid ID format",
-		})
 		return
 	}
 
@@ -152,9 +102,5 @@ func (h *CategoryHandler) DeleteCategory(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.Response{
-		Success: true,
-		Message: fmt.Sprintf("Success delete category with id: %d", id),
-		Results: nil,
-	})
+	helper.ResponseOk(ctx, fmt.Sprintf("Success delete category with id: %d", id), nil)
 }
