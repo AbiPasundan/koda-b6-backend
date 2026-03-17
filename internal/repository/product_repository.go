@@ -55,6 +55,27 @@ func (p *ProductRepository) GetAllProductHome() ([]models.ProductHome, error) {
 	return products, nil
 }
 
+func (p *ProductRepository) ProductReview() ([]models.ReviewProduct, error) {
+
+	rows, err := p.db.Query(context.Background(), `
+		SELECT 
+			users.full_name,
+			users.pictures,
+			reviews.messages,
+			reviews.ratings
+		FROM users
+		LEFT JOIN reviews ON users.id = reviews.review_id
+		WHERE reviews.ratings = (SELECT MAX(ratings) FROM reviews);
+	`)
+
+	review, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.ReviewProduct])
+
+	if err != nil {
+		return nil, err
+	}
+	return review, nil
+}
+
 func (p *ProductRepository) GetProductById(id int) (models.Product, error) {
 	rows, err := p.db.Query(context.Background(), `
 		select id, product_name, product_desc, price, quantity, discount from products where id = $1
