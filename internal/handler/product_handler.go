@@ -48,6 +48,15 @@ func (h *ProductHandler) ProductHome(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success get Data Product", &product)
 }
 
+func (h *ProductHandler) ProductReview(ctx *gin.Context) {
+	product, err := h.ProductService.ProductReview()
+	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
+		return
+	}
+
+	helper.ResponseOk(ctx, "Success get Review Product", &product)
+}
+
 func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
 
 	id, ok := helper.GetID(ctx)
