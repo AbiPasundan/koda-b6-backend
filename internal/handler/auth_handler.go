@@ -4,6 +4,8 @@ import (
 	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
+	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,9 +21,21 @@ func NewAuthHandler(repo *service.AuthService) *AuthHandler {
 }
 
 func (h *AuthHandler) Login(ctx *gin.Context) {
-	var password models.AuthLogin
+	var user models.AuthLogin
 
-	ctx.ShouldBindJSON(&password)
+	err := ctx.ShouldBindJSON(&user)
+	if helper.BadRequest(ctx, "Invalid request body", nil, err) {
+		return
+	}
+
+	users, err := h.AuthService.FindEmail(user.Email)
+	if helper.CustomeError(ctx, http.StatusUnauthorized, "Unauthorized", users, err) {
+		return
+	}
+
+	fmt.Println(users)
+
+	helper.ResponseOk(ctx, "Success Login", users)
 }
 
 func (h *AuthHandler) Register(ctx *gin.Context) {
@@ -29,9 +43,11 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 	var req models.AuthRegister
 
 	err := ctx.ShouldBindJSON(&req)
-	helper.BadRequest(ctx, "Invalid request body", nil, err)
+	if helper.BadRequest(ctx, "Invalid request body", nil, err) {
+		return
+	}
 
 	h.AuthService.Register(&models.AuthRegister{})
 
-	ctx.JSON(200, gin.H{"message": "user created"})
+	helper.ResponseOk(ctx, "Success Create User", nil)
 }

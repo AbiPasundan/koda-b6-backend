@@ -15,17 +15,17 @@ func NewAuthRepository(db *pgx.Conn) *AuthRepository {
 	return &AuthRepository{db: db}
 }
 
-func (u *AuthRepository) FindEmail(email string) ([]models.AuthLogin, error) {
+func (u *AuthRepository) FindEmail(email string) ([]models.User, error) {
 
 	rows, err := u.db.Query(context.Background(), `
-		SELECT users.full_name, users.email
+		SELECT full_name, email
 		FROM users
 	`)
 	if err != nil {
 		return nil, err
 	}
 
-	return pgx.CollectRows(rows, pgx.RowToStructByName[models.AuthLogin])
+	return pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
 }
 
 func (u *AuthRepository) Register(user *models.AuthRegister) {

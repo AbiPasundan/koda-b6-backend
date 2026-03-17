@@ -10,13 +10,13 @@ type Users struct {
 
 // ("id", "full_name", "email", "password", "address", "phone", "pictures")
 type User struct {
-	Id        int     `db:"id"`
-	Full_Name string  `db:"full_name"`
-	Email     string  `db:"email"`
-	Password  string  `db:"password"`
-	Address   *string `db:"address"`
-	Phone     *string `db:"phone"`
-	Pictures  *string `db:"pictures"`
+	Id        int     `db:"id" json:"id"`
+	Full_Name string  `db:"full_name" json:"full_name"`
+	Email     string  `db:"email" json:"email"`
+	Password  string  `db:"password" json:"password"`
+	Address   *string `db:"address" json:"address"`
+	Phone     *string `db:"phone" json:"phone"`
+	Pictures  *string `db:"pictures" json:"pictures"`
 }
 
 type ForgotPassword struct {

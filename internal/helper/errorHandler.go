@@ -46,3 +46,17 @@ func BadRequest(ctx *gin.Context, message string, result any, err error) bool {
 
 	return false
 }
+
+// custom error
+func CustomeError(ctx *gin.Context, statusResponse int, message string, result any, err error) bool {
+	if err != nil {
+		ctx.JSON(statusResponse, models.Response{
+			Success: false,
+			Message: message + err.Error(),
+			Results: result,
+		})
+		return true
+	}
+
+	return false
+}
