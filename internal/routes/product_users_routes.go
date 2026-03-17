@@ -8,6 +8,5 @@ import (
 
 func ProductUserRoutes(r *gin.Engine, h *handler.ProductHandler) {
 	r.GET("/products/home", h.ProductHome)
+	r.GET("/products/reviews", h.ProductReview)
 }
-
-// admin.GET("/products/home", h.ProductHome)
