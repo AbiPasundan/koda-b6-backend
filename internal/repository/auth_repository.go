@@ -11,7 +11,7 @@ type AuthRepository struct {
 	db *pgx.Conn
 }
 
-func NewRepository(db *pgx.Conn) *AuthRepository {
+func NewAuthRepository(db *pgx.Conn) *AuthRepository {
 	return &AuthRepository{db: db}
 }
 
