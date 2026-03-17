@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
 
@@ -17,28 +18,20 @@ func NewAuthService(repo *service.AuthService) *AuthHandler {
 	}
 }
 
-func (h *AuthHandler) FindEmail(ctx *gin.Context) {
-	// return h.AuthService.FindEmail(email)
-	var password models.Users
+func (h *AuthHandler) Login(ctx *gin.Context) {
+	var password models.AuthLogin
 
 	ctx.ShouldBindJSON(&password)
-
-	// argon := argon2.DefaultConfig()
-
-	// encoded, err := argon.HashEncoded([]byte(password))
-	// if err != nil {
-	// 	return
-	// }
-	// fmt.Println(string(encoded))
-
 }
 
-// password := "secret"
+func (h *AuthHandler) Register(ctx *gin.Context) {
 
-// argon := argon2.DefaultConfig()
+	var req models.AuthRegister
 
-// encoded, err := argon.HashEncoded([]byte(password))
-// if err != nil {
-// 	return nil, err
-// }
-// fmt.Println(string(encoded))
+	err := ctx.ShouldBindJSON(&req)
+	helper.BadRequest(ctx, "Invalid request body", nil, err)
+
+	h.AuthService.Register(&models.AuthRegister{})
+
+	ctx.JSON(200, gin.H{"message": "user created"})
+}
