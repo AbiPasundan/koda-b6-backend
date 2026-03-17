@@ -31,6 +31,7 @@ func main() {
 
 	routes.UserRoutes(r, userContainer.UserHandler)
 	routes.ProductRoutes(r, userContainer.ProductHandler)
+	routes.ProductUserRoutes(r, userContainer.ProductHandler)
 	routes.AuthRoutes(r, userContainer.ForgotPasswordHandler)
 	routes.CategoryRoutes(r, userContainer.CategoryHandler)
 

@@ -30,6 +30,31 @@ func (p *ProductRepository) GetAllProduct() ([]models.Product, error) {
 	return products, nil
 }
 
+func (p *ProductRepository) GetAllProductHome() ([]models.ProductHome, error) {
+
+	rows, err := p.db.Query(context.Background(), `
+		SELECT
+			p.id,
+			p.product_name,
+			p.product_desc,
+			p.price,
+			product_images.path,
+			reviews.ratings
+		FROM products p
+		LEFT JOIN product_images ON p.id = product_images.product_images_id
+		LEFT JOIN reviews ON p.id = reviews.review_id
+		WHERE p.id > 5
+		LIMIT 4;
+	`)
+
+	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.ProductHome])
+
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
 func (p *ProductRepository) GetProductById(id int) (models.Product, error) {
 	rows, err := p.db.Query(context.Background(), `
 		select id, product_name, product_desc, price, quantity, discount from products where id = $1

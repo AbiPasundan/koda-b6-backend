@@ -35,3 +35,12 @@ type Variant struct {
 	VariantName string `json:"variant_name" db:"variant_name"`
 	Price       string `json:"add_price" db:"add_price"`
 }
+
+type ProductHome struct {
+	Id          int     `json:"id" db:"id"`
+	Name        string  `json:"product_name" db:"product_name"`
+	Description string  `json:"product_desc" db:"product_desc"`
+	Price       int     `json:"price" db:"price"`
+	Ratings     *int    `json:"ratings" db:"ratings"`
+	Path        *string `json:"path" db:"path"`
+}

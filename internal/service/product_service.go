@@ -34,3 +34,7 @@ func (p *ProductService) UpdateProductById(id int, product models.Product) (mode
 func (p *ProductService) DeleteProductById(id int) error {
 	return p.ProductRepo.DeleteProductById(id)
 }
+
+func (p *ProductService) GetProductHome() ([]models.ProductHome, error) {
+	return p.ProductRepo.GetAllProductHome()
+}

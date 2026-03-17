@@ -48,6 +48,24 @@ func (h *ProductHandler) Product(ctx *gin.Context) {
 	})
 }
 
+func (h *ProductHandler) ProductHome(ctx *gin.Context) {
+	product, err := h.ProductService.GetProductHome()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.Response{
+			Success: false,
+			Message: "Something went wrong please try again : " + err.Error(),
+			Results: nil,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.Response{
+		Success: true,
+		Message: "Success get Data Product",
+		Results: &product,
+	})
+}
+
 func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
 
 	id, ok := helper.GetID(ctx)
