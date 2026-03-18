@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS fotgot_password (
+CREATE TABLE IF NOT EXISTS forgot_password (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INT NOT NULL,
     token TEXT,
