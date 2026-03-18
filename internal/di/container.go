@@ -12,11 +12,10 @@ import (
 )
 
 type Container struct {
-	UserHandler           *handler.UserHandler
-	ProductHandler        *handler.ProductHandler
-	CategoryHandler       *handler.CategoryHandler
-	AuthHandler           *handler.AuthHandler
-	ForgotPasswordHandler *handler.ForgotPasswordHandler
+	UserHandler     *handler.UserHandler
+	ProductHandler  *handler.ProductHandler
+	CategoryHandler *handler.CategoryHandler
+	AuthHandler     *handler.AuthHandler
 }
 
 func BuildContainer() *Container {
