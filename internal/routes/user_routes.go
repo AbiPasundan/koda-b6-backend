@@ -2,14 +2,17 @@ package routes
 
 import (
 	"backend/internal/handler"
+	"backend/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func UserRoutes(r *gin.Engine, h *handler.UserHandler) {
-	r.GET("/users", h.Home)
-	r.GET("/users/:id", h.GetUserById)
-	r.POST("/users", h.AddUser)
-	r.PATCH("/users/:id", h.UpdateUser)
-	r.DELETE("/users/:id", h.DeleteUser)
+	admin := r.Group("/admin")
+	admin.Use(middleware.JWTMiddleware())
+	admin.GET("/users", h.Home)
+	admin.GET("/users/:id", h.GetUserById)
+	admin.POST("/users", h.AddUser)
+	admin.PATCH("/users/:id", h.UpdateUser)
+	admin.DELETE("/users/:id", h.DeleteUser)
 }
