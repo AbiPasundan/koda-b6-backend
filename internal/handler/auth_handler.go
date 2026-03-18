@@ -69,3 +69,31 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 
 	helper.ResponseOk(ctx, "Success Create User", nil)
 }
+
+func (h *AuthHandler) RequestForgotPassword(ctx *gin.Context) {
+	var req models.AuthForgotPassword
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		helper.BadRequest(ctx, "Invalid request body", nil, err)
+		return
+	}
+	err := h.AuthService.ForgotPasswordRequest(&req)
+	if err != nil {
+		helper.BadRequest(ctx, err.Error(), nil, err)
+		return
+	}
+	helper.ResponseOk(ctx, "OTP sent", nil)
+}
+
+func (h *AuthHandler) ForgotPassword(ctx *gin.Context) {
+
+	var req models.AuthRegister
+
+	err := ctx.ShouldBindJSON(&req.Email)
+	if helper.BadRequest(ctx, "Invalid request body", nil, err) {
+		return
+	}
+
+	// h.AuthService.CreateForgotPassword()
+
+	helper.ResponseOk(ctx, "Success Create User", nil)
+}

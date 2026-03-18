@@ -3,6 +3,8 @@ package service
 import (
 	"backend/internal/models"
 	"backend/internal/repository"
+	"fmt"
+	"math/rand"
 )
 
 type AuthService struct {
@@ -21,4 +23,18 @@ func (p *AuthService) FindEmail(email string) ([]models.AuthLogin, error) {
 
 func (p *AuthService) Register(email *models.AuthRegister) {
 	p.AuthRepo.Register(email)
+}
+
+func (p *AuthService) ForgotPasswordRequest(req *models.AuthForgotPassword) error {
+
+	user, err := p.AuthRepo.GetEmail(req.Email)
+	if err != nil {
+		return err
+	}
+
+	code := fmt.Sprintf("%06d", rand.Intn(1000000))
+
+	fmt.Printf("OTP Request %s: %s\n", req.Email, code)
+
+	return p.AuthRepo.RequestForgotPassword(user.Id, code)
 }

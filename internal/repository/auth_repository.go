@@ -36,5 +36,29 @@ func (u *AuthRepository) Register(user *models.AuthRegister) {
 	if err != nil {
 		return
 	}
+}
 
+func (f *AuthRepository) GetEmail(email string) (*models.User, error) {
+	query := `SELECT id, full_name, email, password, address, phone, pictures FROM users WHERE email = $1`
+	rows, err := f.db.Query(context.Background(), query, email)
+	if err != nil {
+		return nil, err
+	}
+	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (f *AuthRepository) RequestForgotPassword(userId int, token string) error {
+	query := `INSERT INTO forgot_password (user_id, token, created_at) VALUES ($1, $2, NOW())`
+	_, err := f.db.Exec(context.Background(), query, userId, token)
+	return err
+}
+
+func (f *AuthRepository) ResetPassword(userId int, token string) error {
+	query := `INSERT INTO forgot_password (user_id, token, created_at) VALUES ($1, $2, NOW())`
+	_, err := f.db.Query(context.Background(), query, userId, token)
+	return err
 }
