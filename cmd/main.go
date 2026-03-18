@@ -32,10 +32,12 @@ func main() {
 	routes.UserRoutes(r, userContainer.UserHandler)
 	routes.ProductRoutes(r, userContainer.ProductHandler)
 	routes.ProductUserRoutes(r, userContainer.ProductHandler)
-	routes.AuthRoutes(r, userContainer.ForgotPasswordHandler)
+	routes.AuthRoutes(r, userContainer.AuthHandler)
+	// routes.AuthRoutes(r, userContainer.ForgotPasswordHandler)
 	routes.CategoryRoutes(r, userContainer.CategoryHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// r.Run(":8089")
 	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 
 	// r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
@@ -63,4 +65,6 @@ func main() {
 //  docker build -t ghcr.io/YOUR_GITHUB_USERNAME/IMAGE_NAME:latest .
 //  echo YOUR_PAT | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
 
-// docker run --rm --network=server-wildan_default migrate/migrate:latest source github://abipasundan/koda-b6-backend/migrations -database postgresql://postgres:1@pg:5432/postgres?sslmode=disable up
+// docker run --rm --network=server-wildan_default migrate/migrate:latest -source github://abipasundan/koda-b6-backend/migrations -database postgresql://postgres:1@pg:5432/postgres?sslmode=disable version
+
+// perbaikan =
