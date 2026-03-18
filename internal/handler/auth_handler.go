@@ -2,9 +2,9 @@ package handler
 
 import (
 	"backend/internal/helper"
+	"backend/internal/middleware"
 	"backend/internal/models"
 	"backend/internal/service"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +21,22 @@ func NewAuthHandler(repo *service.AuthService) *AuthHandler {
 }
 
 func (h *AuthHandler) Login(ctx *gin.Context) {
+	// var user models.User
+
+	// err := ctx.ShouldBindJSON(&user)
+	// if helper.BadRequest(ctx, "Invalid request body", nil, err) {
+	// 	return
+	// }
+
+	// users, err := h.AuthService.FindEmail(user.Email)
+	// if helper.CustomeError(ctx, http.StatusUnauthorized, "Unauthorized", users, err) {
+	// 	return
+	// }
+
+	// fmt.Println(users)
+
+	// helper.ResponseOk(ctx, "Success Login", users)
+
 	var user models.AuthLogin
 
 	err := ctx.ShouldBindJSON(&user)
@@ -28,14 +44,16 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	users, err := h.AuthService.FindEmail(user.Email)
-	if helper.CustomeError(ctx, http.StatusUnauthorized, "Unauthorized", users, err) {
+	h.AuthService.FindEmail(user.Email)
+
+	token, err := middleware.GenerateToken(user.Id)
+	if err != nil {
+		helper.CustomeError(ctx, http.StatusInternalServerError, "Failed generate token", nil, err)
 		return
 	}
 
-	fmt.Println(users)
+	helper.ResponseOk(ctx, "Success Login", token)
 
-	helper.ResponseOk(ctx, "Success Login", users)
 }
 
 func (h *AuthHandler) Register(ctx *gin.Context) {
