@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS category (
 CREATE TABLE IF NOT EXISTS discount (
     discount_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     discount_rate INT,
-    description VARCHAR(500),
+    description TEXT,
     is_flash_sale BOOLEAN
 );
 
@@ -16,26 +16,41 @@ CREATE TABLE IF NOT EXISTS products (
     product_desc TEXT,
     price INT,
     quantity INT,
-    product_category INT,
     discount INT,
-    CONSTRAINT fk_category FOREIGN KEY (product_category) REFERENCES category(category_id) ON DELETE SET NULL,
     CONSTRAINT fk_discount FOREIGN KEY (discount) REFERENCES discount(discount_id) ON DELETE SET NULL
+);
+
+-- product_name, product_desc, price, quantity, discount
+
+CREATE TABLE IF NOT EXISTS product_categories (
+    product_id INT,
+    category_id INT,
+
+    CONSTRAINT pk_product_category
+    PRIMARY KEY (product_id, category_id),
+
+    CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS product_variant (
     product_variant_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_id INT,
-    variant_name VARCHAR(50),
+    variant_name VARCHAR(255),
     add_price INT,
-    CONSTRAINT fk_variant FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+
+    CONSTRAINT fk_variant FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    CONSTRAINT unique_variant_per_product UNIQUE(product_id, variant_name)
 );
 
 CREATE TABLE IF NOT EXISTS product_size (
     product_size_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_id INT,
-    size_name VARCHAR(50),
+    size_name VARCHAR(255),
     size_price INT,
-    CONSTRAINT fk_size FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+
+    CONSTRAINT fk_size FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    CONSTRAINT unique_size_per_product UNIQUE(product_id, size_name)
 );
 
 CREATE TABLE IF NOT EXISTS product_images (
@@ -47,44 +62,61 @@ CREATE TABLE IF NOT EXISTS product_images (
 
 CREATE TABLE IF NOT EXISTS users (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    full_name VARCHAR(30),
-    email VARCHAR(30),
+    full_name VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
     password TEXT,
     address TEXT,
-    phone VARCHAR(30),
-    pictures VARCHAR(100)
+    phone VARCHAR(255),
+    pictures VARCHAR(255)
 );
+
+-- CREATE TABLE IF NOT EXISTS user_images (
+--     user_images_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+--     user_id INT,
+--     path VARCHAR(255),
+--     CONSTRAINT fk_user_images FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+-- );
 
 
 CREATE TABLE IF NOT EXISTS reviews (
     review_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INT,
+    product_id INT,
     messages TEXT,
-    ratings INT,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    ratings INT CHECK (ratings >= 1 AND ratings <= 5),
+    
+    CONSTRAINT fk_user_review FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    CONSTRAINT fk_product_review FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
-
-CREATE TABLE  IF NOT EXISTS"orders" (
+CREATE TABLE IF NOT EXISTS orders (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    delivery_method VARCHAR(30),
-    full_name VARCHAR(100),
-    email VARCHAR(100),
+    user_id INT,
+    delivery_method VARCHAR(255),
+    full_name VARCHAR(255),
+    email VARCHAR(255),
     address TEXT,
     sub_total INT,
     delivery_fee INT,
     tax INT,
     total INT,
-    date TIMESTAMP,
-    status VARCHAR(30),
-    payment_method INT
+    date TIMESTAMP DEFAULT NOW(),
+    status VARCHAR(255),
+    payment_method INT,
+
+    CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS order_items (
+    order_item_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    price INT NOT NULL,  
+    product_name VARCHAR(255), 
+    variant_name VARCHAR(255),
 
-ALTER TABLE product_variant 
-ADD CONSTRAINT unique_variant_per_product 
-UNIQUE (product_id, variant_name);
 
-ALTER TABLE product_size
-ADD CONSTRAINT unique_size_per_product
-UNIQUE (product_id, size_name);
+    CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+);
