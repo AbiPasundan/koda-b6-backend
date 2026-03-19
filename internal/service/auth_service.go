@@ -38,3 +38,22 @@ func (p *AuthService) ForgotPasswordRequest(req *models.AuthForgotPassword) erro
 
 	return p.AuthRepo.RequestForgotPassword(user.Id, code)
 }
+
+func (p *AuthService) ResetPassword(req models.ResetPasswordRequest) error {
+	userId, err := p.AuthRepo.GetUserIdByToken(req.Token)
+	if err != nil {
+		return err // Token invalid/expired
+	}
+
+	// hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	// if err != nil {
+	//     return errors.New("gagal mengenkripsi password")
+	// }
+
+	err = p.AuthRepo.ResetPassword(userId, string(req.Password))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
