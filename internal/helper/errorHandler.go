@@ -38,7 +38,7 @@ func BadRequest(ctx *gin.Context, message string, result any, err error) bool {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.Response{
 			Success: false,
-			Message: "Something Went Wrong " + err.Error(),
+			Message: "Bad Request 400 input the data correctly:" + err.Error(),
 			Results: result,
 		})
 		return true
