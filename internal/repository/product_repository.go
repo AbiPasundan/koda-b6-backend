@@ -122,9 +122,13 @@ func (p *ProductRepository) ProductReview() ([]models.ReviewProduct, error) {
 			reviews.messages,
 			reviews.ratings
 		FROM users
-		LEFT JOIN reviews ON users.id = reviews.review_id
+		LEFT JOIN reviews ON users.id = reviews.user_id
 		WHERE reviews.ratings = (SELECT MAX(ratings) FROM reviews);
 	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
 	review, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.ReviewProduct])
 

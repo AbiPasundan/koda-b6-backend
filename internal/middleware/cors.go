@@ -49,6 +49,7 @@ func CORSMiddleware() gin.HandlerFunc {
 		ctx.Header("Access-Control-Allow-Headers", "content-type,authorization")
 		if ctx.Request.Method == "OPTIONS" {
 			ctx.Data(http.StatusOK, "", []byte(""))
+			return
 		} else {
 			ctx.Next()
 		}
