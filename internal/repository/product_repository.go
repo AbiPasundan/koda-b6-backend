@@ -115,16 +115,9 @@ func (p *ProductRepository) GetAllProductHome() ([]models.ProductHome, error) {
 
 func (p *ProductRepository) ProductReview() ([]models.ReviewProduct, error) {
 
-	rows, err := p.db.Query(context.Background(), `
-		SELECT 
-			users.full_name,
-			users.pictures,
-			reviews.messages,
-			reviews.ratings
-		FROM users
-		LEFT JOIN reviews ON users.id = reviews.user_id
-		WHERE reviews.ratings = (SELECT MAX(ratings) FROM reviews);
-	`)
+	query := `SELECT users.full_name, users.pictures, reviews.messages, reviews.ratings FROM reviews JOIN users ON users.id = reviews.user_id WHERE reviews.ratings = ( SELECT MAX(ratings) FROM reviews );`
+
+	rows, err := p.db.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
 	}
