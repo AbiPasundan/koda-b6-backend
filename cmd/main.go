@@ -5,8 +5,6 @@ import (
 	container "backend/internal/di"
 	"backend/internal/middleware"
 	"backend/internal/routes"
-	"fmt"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -37,8 +35,8 @@ func main() {
 	routes.CategoryRoutes(r, userContainer.CategoryHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	// r.Run(":8089")
-	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
+	r.Run(":8089")
+	// r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 
 	// r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
