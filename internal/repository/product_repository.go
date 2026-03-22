@@ -27,6 +27,8 @@ func (p *ProductRepository) GetAllProduct() ([]models.Product, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+
 	return products, nil
 }
 
@@ -38,6 +40,8 @@ func (p *ProductRepository) GetProductById(id int) (models.Product, error) {
 	if err != nil {
 		return models.Product{}, err
 	}
+	defer rows.Close()
+
 	result, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Product])
 
 	return result, err
@@ -54,6 +58,8 @@ func (p *ProductRepository) AddProduct(product models.Product) (models.Product, 
 		return models.Product{}, err
 	}
 
+	defer rows.Close()
+
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Product])
 }
 
@@ -67,6 +73,8 @@ func (p *ProductRepository) UpdateProductById(id int, product models.Product) (m
 	if err != nil {
 		return models.Product{}, err
 	}
+
+	defer rows.Close()
 
 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Product])
 }
