@@ -104,6 +104,10 @@ func (p *ProductRepository) GetAllProductHome() ([]models.ProductHome, error) {
 		WHERE p.id > 5
 		LIMIT 4;
 	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
 	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.ProductHome])
 
