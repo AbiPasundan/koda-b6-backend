@@ -40,7 +40,7 @@ func (h *ProductHandler) Product(ctx *gin.Context) {
 }
 
 func (h *ProductHandler) ProductHome(ctx *gin.Context) {
-	product, err := h.ProductService.GetProductHome()
+	product, err := h.ProductService.GetProductHome(ctx)
 	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
 		return
 	}
@@ -49,7 +49,7 @@ func (h *ProductHandler) ProductHome(ctx *gin.Context) {
 }
 
 func (h *ProductHandler) ProductReview(ctx *gin.Context) {
-	product, err := h.ProductService.ProductReview()
+	product, err := h.ProductService.ProductReview(ctx)
 	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
 		return
 	}

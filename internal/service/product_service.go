@@ -3,6 +3,7 @@ package service
 import (
 	"backend/internal/models"
 	"backend/internal/repository"
+	"context"
 )
 
 type ProductService struct {
@@ -35,10 +36,10 @@ func (p *ProductService) DeleteProductById(id int) error {
 	return p.ProductRepo.DeleteProductById(id)
 }
 
-func (p *ProductService) GetProductHome() ([]models.ProductHome, error) {
-	return p.ProductRepo.GetAllProductHome()
+func (p *ProductService) GetProductHome(ctx context.Context) ([]models.ProductHome, error) {
+	return p.ProductRepo.GetAllProductHome(ctx)
 }
 
-func (p *ProductService) ProductReview() ([]models.ReviewProduct, error) {
-	return p.ProductRepo.ProductReview()
+func (p *ProductService) ProductReview(ctx context.Context) ([]models.ReviewProduct, error) {
+	return p.ProductRepo.ProductReview(ctx)
 }

@@ -96,9 +96,9 @@ func (p *ProductRepository) DeleteProductById(id int) error {
 
 // repository card landingpage
 
-func (p *ProductRepository) GetAllProductHome() ([]models.ProductHome, error) {
+func (p *ProductRepository) GetAllProductHome(ctx context.Context) ([]models.ProductHome, error) {
 
-	rows, err := p.db.Query(context.Background(), `
+	rows, err := p.db.Query(ctx, `
 		SELECT
 			p.id,
 			p.product_name,
@@ -125,11 +125,11 @@ func (p *ProductRepository) GetAllProductHome() ([]models.ProductHome, error) {
 	return products, nil
 }
 
-func (p *ProductRepository) ProductReview() ([]models.ReviewProduct, error) {
+func (p *ProductRepository) ProductReview(ctx context.Context) ([]models.ReviewProduct, error) {
 
 	query := `SELECT users.full_name, users.pictures, reviews.messages, reviews.ratings FROM reviews JOIN users ON users.id = reviews.user_id WHERE reviews.ratings = ( SELECT MAX(ratings) FROM reviews );`
 
-	rows, err := p.db.Query(context.Background(), query)
+	rows, err := p.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
