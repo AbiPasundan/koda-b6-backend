@@ -128,7 +128,17 @@ func (p *ProductRepository) GetAllProductHome(ctx context.Context) ([]models.Pro
 
 func (p *ProductRepository) ProductReview(ctx context.Context) ([]models.ReviewProduct, error) {
 
-	query := `SELECT users.full_name, users.pictures, reviews.messages, reviews.ratings FROM reviews JOIN users ON users.id = reviews.user_id WHERE reviews.ratings = ( SELECT MAX(ratings) FROM reviews );`
+	query := `
+	SELECT
+		users.full_name,
+		users.pictures,
+		reviews.messages,
+		reviews.ratings
+	FROM reviews
+	INNER JOIN users ON users.id = reviews.user_id
+	WHERE reviews.ratings >= 4;
+	LIMIT 3
+	`
 
 	rows, err := p.db.Query(ctx, query)
 	if err != nil {
