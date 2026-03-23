@@ -136,8 +136,8 @@ func (p *ProductRepository) ProductReview(ctx context.Context) ([]models.ReviewP
 		reviews.ratings
 	FROM reviews
 	INNER JOIN users ON users.id = reviews.user_id
-	WHERE reviews.ratings >= 4;
-	LIMIT 3
+	WHERE reviews.ratings >= 4
+	LIMIT 3;
 	`
 
 	rows, err := p.db.Query(ctx, query)
