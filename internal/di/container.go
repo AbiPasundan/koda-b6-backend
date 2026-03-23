@@ -6,12 +6,14 @@ import (
 	"backend/internal/service"
 	"context"
 	"log"
+	"os"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
 
 type Container struct {
+	Pool            *pgxpool.Pool
 	UserHandler     *handler.UserHandler
 	ProductHandler  *handler.ProductHandler
 	CategoryHandler *handler.CategoryHandler
@@ -19,30 +21,59 @@ type Container struct {
 }
 
 func BuildContainer() *Container {
-	godotenv.Load()
-	connConfig, err := pgx.ParseConfig("")
-	if err != nil {
-		log.Fatal(err.Error())
+	// godotenv.Load()
+	// connConfig, err := pgx.ParseConfig("")
+	// if err != nil {
+	// 	log.Fatal(err.Error())
+	// }
+
+	// conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+	// if err != nil {
+	// 	log.Fatal(err.Error())
+	// }
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
 	}
 
-	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
+	// 2. Ambil DATABASE_URL dari environment
+	databaseURL := os.Getenv("DATABASE_URL")
+
+	// 3. Buat konfigurasi pool
+	config, err := pgxpool.ParseConfig(databaseURL)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatalf("Gagal parse config: %v", err)
 	}
 
-	userRepo := repository.NewUserRepository(conn)
+	// Atur limit koneksi (Opsional)
+	config.MaxConns = 10 // Maksimal 10 koneksi simultan
+
+	// 4. Inisialisasi pool
+	pool, err := pgxpool.NewWithConfig(context.Background(), config)
+	if err != nil {
+		log.Fatalf("Gagal membuat connection pool: %v", err)
+	}
+	// defer pool.Close() // Pastikan pool ditutup saat aplikasi berhenti
+
+	// 5. Tes koneksi
+	if err := pool.Ping(context.Background()); err != nil {
+		log.Fatalf("Database tidak merespon: %v", err)
+	}
+
+	log.Println("Berhasil terhubung menggunakan connection pool!")
+
+	userRepo := repository.NewUserRepository(pool)
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
-	productRepo := repository.NewProductRepository(conn)
+	productRepo := repository.NewProductRepository(pool)
 	productService := service.NewProductService(productRepo)
 	productHandler := handler.NewProductHandler(productService)
 
-	categoryRepo := repository.NewCategoryRepository(conn)
+	categoryRepo := repository.NewCategoryRepository(pool)
 	categoryService := service.NewCategoryService(categoryRepo)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 
-	authRepo := repository.NewAuthRepository(conn)
+	authRepo := repository.NewAuthRepository(pool)
 	authService := service.NewAuthService(authRepo)
 	authHandler := handler.NewAuthHandler(authService)
 

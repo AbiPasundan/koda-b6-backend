@@ -27,6 +27,8 @@ func main() {
 
 	userContainer := container.BuildContainer()
 
+	defer userContainer.Pool.Close()
+
 	routes.UserRoutes(r, userContainer.UserHandler)
 	routes.ProductRoutes(r, userContainer.ProductHandler)
 	routes.ProductUserRoutes(r, userContainer.ProductHandler)
