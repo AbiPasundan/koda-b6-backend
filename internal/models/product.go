@@ -29,12 +29,12 @@ type ProductSize struct {
 	SizePrice int    `json:"size_price" db:"size_price"`
 }
 
-type Variant struct {
-	VariantId   int    `json:"product_variant_id" db:"product_variant_id"`
-	ProductId   int    `json:"product_id" db:"product_id"`
-	VariantName string `json:"variant_name" db:"variant_name"`
-	Price       string `json:"add_price" db:"add_price"`
-}
+// type Variant struct {
+// 	VariantId   int    `json:"product_variant_id" db:"product_variant_id"`
+// 	ProductId   int    `json:"product_id" db:"product_id"`
+// 	VariantName string `json:"variant_name" db:"variant_name"`
+// 	Price       string `json:"add_price" db:"add_price"`
+// }
 
 type ProductHome struct {
 	Id          int     `json:"id" db:"id"`
@@ -72,17 +72,46 @@ type BrowseProduct struct {
 // 6. desc = done
 // 7. size = done
 // 8. variant = done
+// type DetailProduct struct {
+// 	Id           int     `json:"id" db:"id"`
+// 	Name         *string `json:"product_name" db:"product_name"`
+// 	Description  *string `json:"product_desc" db:"product_desc"`
+// 	Price        *int    `json:"price" db:"price"`
+// 	Quantity     *int    `json:"quantity" db:"quantity"`
+// 	Discount     *int    `json:"discount" db:"discount"`
+// 	DiscountRate *int    `json:"discount_rate" db:"discount_rate"`
+// 	IsFlashSale  *bool   `json:"is_flash_sale" db:"is_flash_sale"`
+// 	Images       string  `json:"path" db:"path"`
+// 	Sizes        string  `json:"sizes" db:"sizes"`
+// 	Variants     string  `json:"variants" db:"variants"`
+// 	Rating       *int    `json:"ratings" db:"ratings"`
+// }
+
+type Size struct {
+	SizeName  string `json:"size_name"`
+	SizePrice int    `json:"size_price"`
+}
+
+type Variant struct {
+	VariantName string `json:"variant_name"`
+	AddPrice    int    `json:"add_price"`
+}
+
+// main struct
 type DetailProduct struct {
-	Id           int     `json:"id" db:"id"`
-	Name         *string `json:"product_name" db:"product_name"`
-	Description  *string `json:"product_desc" db:"product_desc"`
-	Price        *int    `json:"price" db:"price"`
-	Quantity     *int    `json:"quantity" db:"quantity"`
-	Discount     *int    `json:"discount" db:"discount"`
-	DiscountRate *int    `json:"discount_rate" db:"discount_rate"`
-	IsFlashSale  *bool   `json:"is_flash_sale" db:"is_flash_sale"`
-	Images       string  `json:"path" db:"path"`
-	Sizes        string  `json:"sizes" db:"sizes"`
-	Variants     string  `json:"variants" db:"variants"`
-	Rating       *int    `json:"ratings" db:"ratings"`
+	Id          int     `json:"id" db:"id"`
+	Name        *string `json:"product_name" db:"product_name"`
+	Description *string `json:"product_desc" db:"product_desc"`
+	Price       *int    `json:"price" db:"price"`
+	Quantity    *int    `json:"quantity" db:"quantity"`
+
+	Discount     *int  `json:"discount" db:"discount"`
+	DiscountRate *int  `json:"discount_rate" db:"discount_rate"`
+	IsFlashSale  *bool `json:"is_flash_sale" db:"is_flash_sale"`
+
+	Images   []string  `json:"images"`
+	Sizes    []Size    `json:"sizes"`
+	Variants []Variant `json:"variants"`
+
+	Rating *float64 `json:"rating" db:"rating"`
 }
