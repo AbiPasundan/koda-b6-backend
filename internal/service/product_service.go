@@ -52,3 +52,10 @@ func (p *ProductService) BrowseProducts(ctx context.Context) ([]models.BrowsePro
 }
 
 // browse product end
+
+// detail product start
+func (p *ProductService) DetailProduct(ctx context.Context) ([]models.DetailProduct, error) {
+	return p.ProductRepo.DetailProduct()
+}
+
+// detail product end

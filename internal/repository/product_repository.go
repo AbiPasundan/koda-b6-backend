@@ -190,7 +190,7 @@ func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
 // 6. desc
 // 7. size
 // 8. variant
-func (p *ProductRepository) DetailProducts() ([]models.DetailProduct, error) {
+func (p *ProductRepository) DetailProduct() ([]models.DetailProduct, error) {
 
 	rows, err := p.db.Query(context.Background(), `
 	SELECT
