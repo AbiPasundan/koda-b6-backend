@@ -36,6 +36,7 @@ func (p *ProductService) DeleteProductById(id int) error {
 	return p.ProductRepo.DeleteProductById(id)
 }
 
+// home start
 func (p *ProductService) GetProductHome(ctx context.Context) ([]models.ProductHome, error) {
 	return p.ProductRepo.GetAllProductHome(ctx)
 }
@@ -43,3 +44,11 @@ func (p *ProductService) GetProductHome(ctx context.Context) ([]models.ProductHo
 func (p *ProductService) ProductReview(ctx context.Context) ([]models.ReviewProduct, error) {
 	return p.ProductRepo.ProductReview(ctx)
 }
+
+// home end
+// browse product start
+func (p *ProductService) BrowseProducts(ctx context.Context) ([]models.BrowseProduct, error) {
+	return p.ProductRepo.BrowseProducts()
+}
+
+// browse product end

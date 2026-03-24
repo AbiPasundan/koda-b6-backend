@@ -51,3 +51,16 @@ type ReviewProduct struct {
 	Message  *string `json:"messages" db:"messages"`
 	Rating   *int    `json:"ratings" db:"ratings"`
 }
+
+// browse product
+// select id, product_name, product_desc, price, quantity, discount,
+// discount.is_flash_sale from products left join discount on products.id = discount.discount_id;
+type BrowseProduct struct {
+	Id          int     `json:"id" db:"id"`
+	Name        *string `json:"product_name" db:"product_name"`
+	Description *string `json:"product_desc" db:"product_desc"`
+	Price       *int    `json:"price" db:"price"`
+	Quantity    *int    `json:"quantity" db:"quantity"`
+	Discount    *int    `json:"discount" db:"discount"`
+	IsFlashSale *bool   `json:"is_flash_sale" db:"is_flash_sale"`
+}

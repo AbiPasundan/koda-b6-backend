@@ -38,6 +38,14 @@ func (h *ProductHandler) Product(ctx *gin.Context) {
 
 	helper.ResponseOk(ctx, "Success get Data Product", &product)
 }
+func (h *ProductHandler) BrowseProduct(ctx *gin.Context) {
+	product, err := h.ProductService.BrowseProducts(ctx)
+	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
+		return
+	}
+
+	helper.ResponseOk(ctx, "Success get browse Data Product", &product)
+}
 
 func (h *ProductHandler) ProductHome(ctx *gin.Context) {
 	product, err := h.ProductService.GetProductHome(ctx)

@@ -155,3 +155,27 @@ func (p *ProductRepository) ProductReview(ctx context.Context) ([]models.ReviewP
 }
 
 // repository browse product
+func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
+
+	rows, err := p.db.Query(context.Background(), `
+		select
+			id,
+			product_name,
+			product_desc,
+			price,
+			quantity,
+			discount,
+			discount.is_flash_sale
+		from products
+		left join discount on products.id = discount.discount_id
+	`)
+
+	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.BrowseProduct])
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return products, nil
+}
