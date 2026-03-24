@@ -179,3 +179,62 @@ func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
 
 	return products, nil
 }
+
+// detail product
+// data:
+// 1. images
+// 2. is flash sale
+// 3. title
+// 4. price and oldprice
+// 5. review star
+// 6. desc
+// 7. size
+// 8. variant
+func (p *ProductRepository) DetailProducts() ([]models.DetailProduct, error) {
+
+	rows, err := p.db.Query(context.Background(), `
+	SELECT
+		p.*,
+
+		d.discount_rate,
+		d.is_flash_sale,
+
+		(SELECT JSON_AGG(path)
+		FROM product_images
+		WHERE product_id = p.id) AS images,
+
+		(SELECT JSON_AGG(
+			JSON_BUILD_OBJECT(
+				'size_name', size_name,
+				'size_price', size_price
+			)
+		)
+		FROM product_size
+		WHERE product_id = p.id) AS sizes,
+
+		(SELECT JSON_AGG(
+			JSON_BUILD_OBJECT(
+				'variant_name', variant_name,
+				'add_price', add_price
+			)
+		)
+		FROM product_variant
+		WHERE product_id = p.id) AS variants,
+
+		(SELECT AVG(ratings)
+		FROM reviews
+		WHERE product_id = p.id) AS rating
+
+	FROM products p
+LEFT JOIN discount d ON p.id = d.discount_id;
+	`)
+
+	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.DetailProduct])
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return products, nil
+}
