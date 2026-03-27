@@ -98,3 +98,19 @@ Content-Type: application/json
 ### delete category by id
 DELETE http://localhost:8888/admin/category/11
 
+## auth
+
+### register
+# "INSERT INTO users(full_name, email,password) VALUES($1,$2,$3) RETURNING (full_name, email", user.Email, user.Password, user.Full_Name,
+POST http://localhost:8888/register 
+Content-Type: application/json
+
+{
+  "full_name": "juice",
+  "email": "juiceflavour@mail.com",
+  "password":   "10000"
+}
+
+# "Success": false,
+# "Message": "Bad Request 400 input the data correctly:json: cannot unmarshal number into Go struct field AuthRegister.password of type string",
+# "Results": null
