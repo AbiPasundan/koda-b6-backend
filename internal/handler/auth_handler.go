@@ -84,40 +84,19 @@ func (h *AuthHandler) RequestForgotPassword(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "OTP sent", nil)
 }
 
-func (h *AuthHandler) ForgotPassword(ctx *gin.Context) {
+func (h *AuthHandler) ResetPassword(ctx *gin.Context) {
+	var req models.ResetPasswordRequest
 
-	var req models.AuthRegister
-
-	err := ctx.ShouldBindJSON(&req.Email)
-	if helper.BadRequest(ctx, "Invalid request body", nil, err) {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		helper.BadRequest(ctx, "Invalid request", nil, err)
 		return
 	}
 
-	// h.AuthService.CreateForgotPassword()
+	err := h.AuthService.ResetPassword(req)
+	if err != nil {
+		helper.BadRequest(ctx, err.Error(), nil, err)
+		return
+	}
 
-	helper.ResponseOk(ctx, "Success Create User", nil)
+	helper.ResponseOk(ctx, "Password reset success", nil)
 }
-
-// func (h *AuthHandler) ResetPasswordHandler(ctx *gin.Context) {
-// 	var req struct {
-// 		Token    string `json:"token"`
-// 		Password string `json:"password"`
-// 	}
-
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		helper.BadRequest(ctx, "Invalid request body", nil, err)
-// 		return
-// 	}
-
-// 	res, err := h.AuthService.ResetPassword(ResetPasswordRequest{
-// 		Token:    req.Token,
-// 		Password: req.Password,
-// 	})
-
-// 	if err != nil {
-// 		helper.BadRequest(ctx, err.Error(), nil, err)
-// 		return
-// 	}
-
-// 	helper.ResponseOk(ctx, "Password updated", res)
-// }

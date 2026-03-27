@@ -9,6 +9,6 @@ import (
 func AuthRoutes(r *gin.Engine, h *handler.AuthHandler) {
 	r.POST("/register", h.Register)
 	r.POST("/login", h.Login)
-	r.POST("/forgot-password", h.ForgotPassword)
+	r.POST("/forgot-password", h.ResetPassword)
 	r.POST("/request-forgot-password", h.RequestForgotPassword)
 }

@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Users struct {
 	Id        int     `db:"id"`
 	Full_Name string  `db:"full_name"`
@@ -20,10 +22,16 @@ type User struct {
 }
 
 type ForgotPassword struct {
-	Id        int    `db:"id"`
-	UserId    int    `db:"user_id"`
-	Token     string `db:"token"`
-	CreatedAt string `db:"created_at"`
+	Id        int       `db:"id"`
+	UserId    int       `db:"user_id"`
+	Token     string    `db:"token"`
+	CreatedAt time.Time `db:"created_at"`
+	// type after this cnage column name
+	ExpiresAt time.Time `db:"expires_at"`
+}
+
+type AuthResetPassword struct {
+	string `db:"expires_as"`
 }
 
 type Response struct {

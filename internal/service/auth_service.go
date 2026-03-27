@@ -3,8 +3,10 @@ package service
 import (
 	"backend/internal/models"
 	"backend/internal/repository"
+	"errors"
 	"fmt"
 	"math/rand"
+	"time"
 )
 
 type AuthService struct {
@@ -40,20 +42,20 @@ func (p *AuthService) ForgotPasswordRequest(req *models.AuthForgotPassword) erro
 }
 
 func (p *AuthService) ResetPassword(req models.ResetPasswordRequest) error {
-	userId, err := p.AuthRepo.GetUserIdByToken(req.Token)
+
+	data, err := p.AuthRepo.GetByToken(req.Token)
 	if err != nil {
-		return err // Token invalid/expired
+		return errors.New("invalid token")
 	}
 
-	// hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	// if err != nil {
-	//     return errors.New("gagal mengenkripsi password")
-	// }
+	if time.Now().After(data.ExpiresAt) {
+		return errors.New("token expired")
+	}
 
-	err = p.AuthRepo.ResetPassword(userId, string(req.Password))
+	err = p.AuthRepo.ResetPassword(data.UserId, string(req.Password))
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return p.AuthRepo.DeleteToken(req.Token)
 }

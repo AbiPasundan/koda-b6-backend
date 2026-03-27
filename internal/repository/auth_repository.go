@@ -3,7 +3,6 @@ package repository
 import (
 	"backend/internal/models"
 	"context"
-	"errors"
 	"log"
 
 	"github.com/jackc/pgx/v5"
@@ -56,43 +55,34 @@ func (f *AuthRepository) GetEmail(email string) (*models.User, error) {
 }
 
 func (f *AuthRepository) RequestForgotPassword(userId int, token string) error {
-	query := `INSERT INTO forgot_password (user_id, token, created_at) VALUES ($1, $2, NOW())`
+	query := `INSERT INTO forgot_password (user_id, token, created_at, expires_at) VALUES ($1, $2, NOW(), NOW() + INTERVAL '5 minutes')`
 	_, err := f.db.Exec(context.Background(), query, userId, token)
 	return err
 }
 
-func (f *AuthRepository) GetUserIdByToken(token string) (int, error) {
-	var userId int
-	query := `SELECT user_id FROM forgot_password WHERE token = $1 AND expires_at > NOW()`
-	err := f.db.QueryRow(context.Background(), query, token).Scan(&userId)
-	if err != nil {
-		return 0, errors.New("token invalid atau sudah kadaluarsa")
-	}
-	return userId, nil
+func (f *AuthRepository) GetByToken(token string) (models.ForgotPassword, error) {
+	var data models.ForgotPassword
+
+	query := `
+	SELECT user_id, expires_at 
+	FROM forgot_password 
+	WHERE token = $1
+	`
+
+	err := f.db.QueryRow(context.Background(), query, token).
+		Scan(&data.UserId, &data.ExpiresAt)
+
+	return data, err
 }
 
 func (f *AuthRepository) ResetPassword(userId int, password string) error {
-	// query := `UPDATE users SET password = $1 WHERE email = $2`
-	// rows, err := f.db.Exec(context.Background(), query, email)
-	// if err != nil {
-	// 	return err
-	// }
-	// if rows.RowsAffected() == 0 {
-	// 	return errors.New("user not found")
-	// }
-	// return nil
-	// user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.AuthForgotPassword])
-	// if err != nil {
-	// 	return user, err
-	// }
-	// return user, err
 	query := `UPDATE users SET password = $1 WHERE id = $2`
-	rows, err := f.db.Exec(context.Background(), query, password, userId)
-	if err != nil {
-		return err
-	}
-	if rows.RowsAffected() == 0 {
-		return errors.New("user not found")
-	}
-	return nil
+	_, err := f.db.Exec(context.Background(), query, password, userId)
+	return err
+}
+
+func (f *AuthRepository) DeleteToken(token string) error {
+	query := `DELETE FROM forgot_password WHERE token = $1`
+	_, err := f.db.Exec(context.Background(), query, token)
+	return err
 }
