@@ -20,8 +20,6 @@ CREATE TABLE IF NOT EXISTS products (
     CONSTRAINT fk_discount FOREIGN KEY (discount) REFERENCES discount(discount_id) ON DELETE SET NULL
 );
 
--- product_name, product_desc, price, quantity, discount
-
 CREATE TABLE IF NOT EXISTS product_categories (
     product_id INT,
     category_id INT,
@@ -29,7 +27,7 @@ CREATE TABLE IF NOT EXISTS product_categories (
     CONSTRAINT pk_product_category
     PRIMARY KEY (product_id, category_id),
 
-    CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    CONSTRAINT fk_product_categories FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
 );
 
@@ -69,14 +67,6 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(255),
     pictures VARCHAR(255)
 );
-
--- CREATE TABLE IF NOT EXISTS user_images (
---     user_images_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
---     user_id INT,
---     path VARCHAR(255),
---     CONSTRAINT fk_user_images FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
--- );
-
 
 CREATE TABLE IF NOT EXISTS reviews (
     review_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -118,5 +108,34 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 
     CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+    CONSTRAINT fk_product_order_items FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS carts (
+    cart_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT UNIQUE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_cart_user FOREIGN KEY (user_id)
+    REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS cart_items (
+    cart_item_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cart_id INT,
+    product_id INT,
+    quantity INT NOT NULL CHECK (quantity > 0),
+
+    product_name VARCHAR(255),
+    base_price INT,
+
+    variant_name VARCHAR(255),
+    size_name VARCHAR(255),
+
+    CONSTRAINT fk_cart FOREIGN KEY (cart_id)
+    REFERENCES carts(cart_id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_product_cart_items FOREIGN KEY (product_id)
+    REFERENCES products(id) ON DELETE CASCADE
 );
