@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS "users", "products", "orders", "product_images", "category", "product_categories", "product_size","product_variant","discount", "reviews", "user_images", "order_items", "product_categories", "forgot_password" CASCADE;
+DROP TABLE IF EXISTS "users", "products", "orders", "product_images", "category", "product_categories", "product_size","product_variant","discount", "reviews", "user_images", "order_items", "product_categories", "cart_items", "carts", "role" CASCADE;

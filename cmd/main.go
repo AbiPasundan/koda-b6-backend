@@ -37,6 +37,7 @@ func main() {
 	routes.CategoryRoutes(r, userContainer.CategoryHandler)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// it should be change when it test in prod
 	r.Run(":8089")
 	// r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 

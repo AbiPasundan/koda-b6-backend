@@ -58,8 +58,14 @@ CREATE TABLE IF NOT EXISTS product_images (
     CONSTRAINT fk_images FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+CREATE TABLE if NOT EXISTS role (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255)
+);
+
 CREATE TABLE IF NOT EXISTS users (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    role_id int REFERENCES role(id) NOT NULL,
     full_name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
     password TEXT,
