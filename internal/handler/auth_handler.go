@@ -65,7 +65,7 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 		return
 	}
 
-	h.AuthService.Register(&models.AuthRegister{})
+	h.AuthService.Register(&req)
 
 	helper.ResponseOk(ctx, "Success Create User", nil)
 }
