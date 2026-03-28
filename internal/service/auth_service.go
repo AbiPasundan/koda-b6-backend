@@ -32,8 +32,10 @@ func (s *AuthService) Login(email, password string) (*models.AuthLogin, error) {
 	return user, nil
 }
 
-func (p *AuthService) Register(user *models.AuthRegister) {
-	p.AuthRepo.Register(user)
+func (s *AuthService) Register(user *models.AuthRegister) error {
+	user.Password = string(user.Password)
+
+	return s.AuthRepo.Register(user)
 }
 
 func (p *AuthService) ForgotPasswordRequest(req *models.AuthForgotPassword) error {

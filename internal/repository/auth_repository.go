@@ -3,7 +3,6 @@ package repository
 import (
 	"backend/internal/models"
 	"context"
-	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -34,14 +33,13 @@ func (u *AuthRepository) FindByEmail(email string) (*models.AuthLogin, error) {
 	return &user, nil
 }
 
-func (u *AuthRepository) Register(user *models.AuthRegister) {
-	_, err := u.db.Exec(context.Background(),
-		"INSERT INTO users(full_name, email, password) VALUES($1, $2, $3)", user.Full_Name, user.Email, user.Password,
-	)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+func (u *AuthRepository) Register(user *models.AuthRegister) error {
+	_, err := u.db.Exec(context.Background(), `
+		INSERT INTO users (full_name, email, password, role_id)
+		VALUES ($1, $2, $3, $4)
+	`, user.FullName, user.Email, user.Password, 2)
+
+	return err
 }
 
 func (f *AuthRepository) GetEmail(email string) (*models.User, error) {

@@ -6,6 +6,7 @@ import (
 	"backend/internal/models"
 	"backend/internal/service"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,12 +48,23 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 
 	var req models.AuthRegister
 
-	err := ctx.ShouldBindJSON(&req)
-	if helper.BadRequest(ctx, "Invalid request body", nil, err) {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		helper.BadRequest(ctx, "Invalid request body", nil, err)
 		return
 	}
 
-	h.AuthService.Register(&req)
+	err := h.AuthService.Register(&req)
+	if err != nil {
+
+		// handle duplicate email
+		if strings.Contains(err.Error(), "duplicate key") {
+			helper.BadRequest(ctx, "Email already exists", nil, err)
+			return
+		}
+
+		helper.CustomeError(ctx, http.StatusInternalServerError, "Failed register", nil, err)
+		return
+	}
 
 	helper.ResponseOk(ctx, "Success Create User", nil)
 }
