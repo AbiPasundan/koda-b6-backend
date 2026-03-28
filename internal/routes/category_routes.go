@@ -9,7 +9,7 @@ import (
 
 func CategoryRoutes(r *gin.Engine, h *handler.CategoryHandler) {
 	admin := r.Group("/admin")
-	admin.Use(middleware.JWTMiddleware())
+	admin.Use(middleware.JWTMiddleware(), middleware.RoleMiddleware("admin"))
 	{
 		admin.GET("/category", h.Category)
 		admin.GET("/category/:id", h.SearchCategoryById)

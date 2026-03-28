@@ -4,7 +4,9 @@ import (
 	"backend/internal/models"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -15,7 +17,7 @@ func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		auth := c.GetHeader("Authorization")
-		fmt.Printf("Debug: Received Authorization Header: '%s'\n", auth)
+		// fmt.Printf("Debug: Received Authorization Header: '%s'\n", auth)
 
 		if auth == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
@@ -47,7 +49,13 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		fmt.Println("DEBUG ROLE:", claims.Role)
+
 		c.Set("user_id", claims.UserID)
+		c.Set("role", claims.Role)
+
+		fmt.Println("NOW:", time.Now())
+		fmt.Println("EXP:", claims.ExpiresAt.Time)
 
 		c.Next()
 	}
@@ -64,12 +72,12 @@ func RoleMiddleware(allowedRoles ...string) gin.HandlerFunc {
 
 		userRole := role.(string)
 
-		for _, r := range allowedRoles {
-			if r == userRole {
-				c.Next()
-				return
-			}
+		if slices.Contains(allowedRoles, userRole) {
+			c.Next()
+			return
 		}
+
+		fmt.Println("CTX ROLE:", userRole)
 
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "access forbidden"})
 	}
