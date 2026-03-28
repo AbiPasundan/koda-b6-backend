@@ -9,7 +9,7 @@ import (
 
 func ProductRoutes(r *gin.Engine, h *handler.ProductHandler) {
 	admin := r.Group("/admin")
-	admin.Use(middleware.JWTMiddleware())
+	admin.Use(middleware.JWTMiddleware(), middleware.RoleMiddleware("admin"))
 	{
 		admin.GET("/products", h.Product)
 		admin.GET("/products/:id", h.SearchProductById)
