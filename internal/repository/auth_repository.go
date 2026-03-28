@@ -19,13 +19,14 @@ func NewAuthRepository(db *pgxpool.Pool) *AuthRepository {
 
 func (u *AuthRepository) FindByEmail(email string) (*models.AuthLogin, error) {
 	row := u.db.QueryRow(context.Background(), `
-		SELECT id, email, password 
-		FROM users 
-		WHERE email = $1;
+		SELECT u.id, u.email, u.password, r.name
+		FROM users u
+		JOIN role r ON u.role_id = r.id
+		WHERE u.email = $1;
 	`, email)
 
 	var user models.AuthLogin
-	err := row.Scan(&user.Id, &user.Email, &user.Password)
+	err := row.Scan(&user.Id, &user.Email, &user.Password, &user.Role)
 	if err != nil {
 		return nil, err
 	}

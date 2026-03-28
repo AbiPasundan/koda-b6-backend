@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"backend/internal/models"
 	"fmt"
 	"net/http"
 	"strings"
@@ -29,7 +30,7 @@ func JWTMiddleware() gin.HandlerFunc {
 
 		tokenStr := strings.Trim(parts[1], "\"' ")
 
-		claims := &Claims{}
+		claims := &models.Claims{}
 
 		token, err := jwt.ParseWithClaims(tokenStr, claims,
 			func(token *jwt.Token) (interface{}, error) {
@@ -49,5 +50,27 @@ func JWTMiddleware() gin.HandlerFunc {
 		c.Set("user_id", claims.UserID)
 
 		c.Next()
+	}
+}
+
+func RoleMiddleware(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		role, exists := c.Get("role")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "role not found"})
+			return
+		}
+
+		userRole := role.(string)
+
+		for _, r := range allowedRoles {
+			if r == userRole {
+				c.Next()
+				return
+			}
+		}
+
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "access forbidden"})
 	}
 }

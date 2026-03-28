@@ -34,7 +34,7 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := middleware.GenerateToken(user.Id)
+	token, err := middleware.GenerateToken(user.Id, user.Role)
 	if err != nil {
 		helper.CustomeError(ctx, http.StatusInternalServerError, "Failed generate token", nil, err)
 		return
