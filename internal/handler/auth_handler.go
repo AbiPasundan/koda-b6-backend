@@ -21,30 +21,18 @@ func NewAuthHandler(repo *service.AuthService) *AuthHandler {
 }
 
 func (h *AuthHandler) Login(ctx *gin.Context) {
-	// var user models.User
+	var req models.AuthLogin
 
-	// err := ctx.ShouldBindJSON(&user)
-	// if helper.BadRequest(ctx, "Invalid request body", nil, err) {
-	// 	return
-	// }
-
-	// users, err := h.AuthService.FindEmail(user.Email)
-	// if helper.CustomeError(ctx, http.StatusUnauthorized, "Unauthorized", users, err) {
-	// 	return
-	// }
-
-	// fmt.Println(users)
-
-	// helper.ResponseOk(ctx, "Success Login", users)
-
-	var user models.AuthLogin
-
-	err := ctx.ShouldBindJSON(&user)
-	if helper.BadRequest(ctx, "Invalid request body", nil, err) {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		helper.BadRequest(ctx, "Invalid request", nil, err)
 		return
 	}
 
-	h.AuthService.FindEmail(user.Email)
+	user, err := h.AuthService.Login(req.Email, req.Password)
+	if err != nil {
+		helper.BadRequest(ctx, "Wrong Email or Password", nil, err)
+		return
+	}
 
 	token, err := middleware.GenerateToken(user.Id)
 	if err != nil {
@@ -53,7 +41,6 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 	}
 
 	helper.ResponseOk(ctx, "Success Login", token)
-
 }
 
 func (h *AuthHandler) Register(ctx *gin.Context) {

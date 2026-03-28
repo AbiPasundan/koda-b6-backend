@@ -19,8 +19,17 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 	}
 }
 
-func (p *AuthService) FindEmail(email string) ([]models.AuthLogin, error) {
-	return p.AuthRepo.FindEmail(email)
+func (s *AuthService) Login(email, password string) (*models.AuthLogin, error) {
+	user, err := s.AuthRepo.FindByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Password != password {
+		return nil, fmt.Errorf("invalid credentials")
+	}
+
+	return user, nil
 }
 
 func (p *AuthService) Register(user *models.AuthRegister) {
