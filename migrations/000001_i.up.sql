@@ -71,7 +71,8 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT,
     address TEXT,
     phone VARCHAR(255),
-    pictures VARCHAR(255)
+    pictures VARCHAR(255),
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS reviews (
