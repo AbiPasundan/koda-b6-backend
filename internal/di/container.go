@@ -21,44 +21,30 @@ type Container struct {
 }
 
 func BuildContainer() *Container {
-	// godotenv.Load()
-	// connConfig, err := pgx.ParseConfig("")
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
-
-	// conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Warning: file .env tidak ditemukan, menggunakan environment variables bawaan")
 	}
 
-	// 2. Ambil DATABASE_URL dari environment
 	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		log.Fatal("DATABASE_URL environment variable is required") // Ini baru wajar pakai Fatal
+	}
 
-	// 3. Buat konfigurasi pool
 	config, err := pgxpool.ParseConfig(databaseURL)
 	if err != nil {
 		log.Fatalf("Gagal parse config: %v", err)
 	}
 
-	// Atur limit koneksi (Opsional)
-	config.MaxConns = 10 // Maksimal 10 koneksi simultan
+	config.MaxConns = 10
 
-	// 4. Inisialisasi pool
 	pool, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		log.Fatalf("Gagal membuat connection pool: %v", err)
 	}
-	// defer pool.Close() // Pastikan pool ditutup saat aplikasi berhenti
 
-	// 5. Tes koneksi
 	if err := pool.Ping(context.Background()); err != nil {
 		log.Fatalf("Database tidak merespon: %v", err)
 	}
-
 	log.Println("Berhasil terhubung menggunakan connection pool!")
 
 	userRepo := repository.NewUserRepository(pool)
