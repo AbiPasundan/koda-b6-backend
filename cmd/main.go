@@ -37,6 +37,7 @@ func main() {
 	routes.AuthRoutes(r, userContainer.AuthHandler)
 	// routes.AuthRoutes(r, userContainer.ForgotPasswordHandler)
 	routes.CategoryRoutes(r, userContainer.CategoryHandler)
+	routes.ProductCartRoutes(r, userContainer.AddToCart)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// it should be change when it test in prod

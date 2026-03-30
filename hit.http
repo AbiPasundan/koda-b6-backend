@@ -114,3 +114,16 @@ Content-Type: application/json
 # "Success": false,
 # "Message": "Bad Request 400 input the data correctly:json: cannot unmarshal number into Go struct field AuthRegister.password of type string",
 # "Results": null
+
+## product cart
+
+### add to cart
+POST http://localhost:8888/detailproduct/addcart
+Content-Type: application/json
+
+{
+  "product_id": 1,
+  "quantity": 2,
+  "product_name": "Juice",
+  "base_price": 10000
+}

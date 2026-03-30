@@ -115,3 +115,13 @@ type DetailProduct struct {
 
 	Rating *float64 `json:"rating" db:"rating"`
 }
+
+type CartItem struct {
+	CartID      int    `json:"cart_id"`
+	ProductID   int    `json:"product_id"`
+	Quantity    int    `json:"quantity"`
+	ProductName string `json:"product_name"`
+	BasePrice   int    `json:"base_price"`
+	VariantName string `json:"variant_name"`
+	SizeName    string `json:"size_name"`
+}

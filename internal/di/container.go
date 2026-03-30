@@ -18,6 +18,7 @@ type Container struct {
 	ProductHandler  *handler.ProductHandler
 	CategoryHandler *handler.CategoryHandler
 	AuthHandler     *handler.AuthHandler
+	AddToCart       *handler.ProductCartHandler
 }
 
 func BuildContainer() *Container {
@@ -70,11 +71,16 @@ func BuildContainer() *Container {
 	authService := service.NewAuthService(authRepo)
 	authHandler := handler.NewAuthHandler(authService)
 
+	addToCartRepo := repository.NewProductCartRepository(pool)
+	addToCartService := service.NewProductCartService(addToCartRepo)
+	addToCartHandler := handler.NewProductCartHandler(addToCartService)
+
 	return &Container{
 		UserHandler:     userHandler,
 		ProductHandler:  productHandler,
 		CategoryHandler: categoryHandler,
 		AuthHandler:     authHandler,
+		AddToCart:       addToCartHandler,
 	}
 }
 
