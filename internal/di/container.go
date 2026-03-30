@@ -27,7 +27,7 @@ func BuildContainer() *Container {
 
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
-		log.Fatal("DATABASE_URL environment variable is required") // Ini baru wajar pakai Fatal
+		log.Fatal("DATABASE_URL environment variable is required")
 	}
 
 	config, err := pgxpool.ParseConfig(databaseURL)
