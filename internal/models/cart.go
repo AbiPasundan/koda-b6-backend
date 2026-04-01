@@ -9,3 +9,13 @@ type Cart struct {
 	CartItem CartItem
 	// Products   []Item `json:"items" db:"items"`
 }
+
+type AddCartRequest struct {
+	UserID      int    `json:"user_id" validate:"required"`
+	ProductID   int    `json:"product_id" validate:"required"`
+	Quantity    int    `json:"quantity" validate:"required,min=1"`
+	ProductName string `json:"product_name"`
+	BasePrice   int    `json:"base_price"`
+	VariantName string `json:"variant_name"`
+	SizeName    string `json:"size_name"`
+}

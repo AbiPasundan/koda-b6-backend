@@ -8,5 +8,5 @@ import (
 
 func ProductCartRoutes(r *gin.Engine, h *handler.ProductCartHandler) {
 	// in landing page
-	r.POST("/detailproduct/addcart", h.AddToCart)
+	r.POST("/detailproduct/addcart", h.AddCart)
 }

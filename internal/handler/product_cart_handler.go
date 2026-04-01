@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"backend/internal/helper"
+	"backend/internal/models"
 	"backend/internal/service"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,27 +27,38 @@ type AddToCartRequest struct {
 	SizeName    string `json:"size_name"`
 }
 
-func (h *ProductCartHandler) AddToCart(ctx *gin.Context) {
-	// var CartItem models.CartItem
-	// // var cart
-	// if err := ctx.ShouldBindJSON(&CartItem); err != nil {
-	// 	ctx.JSON(http.StatusBadRequest, models.Response{
-	// 		Success: false,
-	// 		Message: "Something Went Wrong" + err.Error(),
-	// 		Results: nil,
-	// 	})
-	// 	helper.CustomeError(ctx, http.StatusInternalServerError, "Successfully added item to cart", err.Error(), err)
-	// 	return
-	// }
+func (h *ProductCartHandler) AddCart(c *gin.Context) {
+	var req models.AddCartRequest
 
-	// err := h.ProductCartService.AddCart(ctx, )
-	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, models.Response{
-	// 		Success: false,
-	// 		Message: "Internal Server Error" + err.Error(),
-	// 		Results: nil,
-	// 	})
-	// 	return
-	// }
-	helper.ResponseOk(ctx, "Successfully added item to cart", nil)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Format data tidak valid atau ada data yang kurang",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	userID, exists := c.Get("user_id")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	req.UserID = userID.(int)
+
+	err := h.ProductCartService.AddCart(c.Request.Context(), req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "Gagal memproses keranjang belanja",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"status":  "success",
+		"message": "Produk berhasil ditambahkan ke keranjang",
+	})
 }
