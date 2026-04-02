@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"github.com/matthewhartstonge/argon2"
 )
 
 type AuthService struct {
@@ -20,12 +22,19 @@ func NewAuthService(repo *repository.AuthRepository) *AuthService {
 }
 
 func (s *AuthService) Login(email, password string) (*models.AuthLogin, error) {
+	// argon := argon2.DefaultConfig()
+
 	user, err := s.AuthRepo.FindByEmail(email)
 	if err != nil {
 		return nil, err
 	}
 
-	if user.Password != password {
+	match, err := argon2.VerifyEncoded([]byte(password), []byte(user.Password))
+	if err != nil {
+		return nil, fmt.Errorf("error verifying password: %w", err)
+	}
+
+	if !match {
 		return nil, fmt.Errorf("invalid credentials")
 	}
 
@@ -33,7 +42,15 @@ func (s *AuthService) Login(email, password string) (*models.AuthLogin, error) {
 }
 
 func (s *AuthService) Register(user *models.AuthRegister) error {
-	user.Password = string(user.Password)
+	argon := argon2.DefaultConfig()
+
+	encoded, err := argon.HashEncoded([]byte(user.Password))
+
+	if err != nil {
+		panic(err)
+	}
+
+	user.Password = string(encoded)
 
 	return s.AuthRepo.Register(user)
 }
