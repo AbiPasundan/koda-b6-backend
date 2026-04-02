@@ -4,6 +4,7 @@ import (
 	"backend/internal/models"
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -23,6 +24,82 @@ type CartItem struct {
 	BasePrice   int              `json:"base_price"`
 	VariantName []models.Variant `json:"variant_name"`
 	SizeName    []models.Size    `json:"size_name"`
+}
+
+// func (r *ProductCartRepository) GetCart(id int) (models.ProductCart, error) {
+// 	query := `
+// 		SELECT
+// 			ci.cart_item_id,
+// 			ci.product_id,
+// 			ci.product_name,
+// 			ci.variant_name,
+// 			ci.size_name,
+// 			ci.base_price,
+// 			ci.quantity,
+// 			(ci.base_price * ci.quantity) AS total_price,
+// 			pi.path AS image_path
+// 		FROM
+// 			carts c
+// 		JOIN
+// 			cart_items ci ON c.cart_id = ci.cart_id
+// 		LEFT JOIN
+// 			product_images pi ON ci.product_id = pi.product_id
+// 		WHERE
+// 			c.user_id = $1;
+// 	`
+
+// 	rows, err := r.db.Query(context.Background(), query, id)
+
+// 	if err != nil {
+// 		return models.ProductCart{}, err
+// 	}
+// 	defer rows.Close()
+
+// 	result, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.ProductCart])
+
+// 	if err != nil {
+// 		return models.ProductCart{}, err
+// 	}
+// 	return result, nil
+
+// }
+
+// Ubah return type menjadi []models.ProductCart
+func (r *ProductCartRepository) GetCart(id int) ([]models.ProductCart, error) {
+	query := `
+        SELECT 
+            ci.cart_item_id,
+            ci.product_id,
+            ci.product_name,
+            ci.variant_name,
+            ci.size_name,
+            ci.base_price,
+            ci.quantity,
+            (ci.base_price * ci.quantity) AS total_price,
+            pi.path AS image_path
+        FROM 
+            carts c
+        JOIN 
+            cart_items ci ON c.cart_id = ci.cart_id
+        LEFT JOIN 
+            product_images pi ON ci.product_id = pi.product_id
+        WHERE 
+            c.user_id = $1;
+    `
+
+	rows, err := r.db.Query(context.Background(), query, id)
+	if err != nil {
+		return nil, err // Return nil untuk slice
+	}
+	defer rows.Close()
+
+	// Gunakan CollectRows untuk mengambil banyak baris
+	results, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.ProductCart])
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }
 
 func (r *ProductCartRepository) AddCart(ctx context.Context, req models.AddCartRequest) error {

@@ -36,3 +36,12 @@ func (s *ProductCartService) AddCart(ctx context.Context, req models.AddCartRequ
 
 	return nil
 }
+
+// func (s *ProductCartService) GetCart(id int) (models.ProductCart, error) {
+// 	return s.ProductCartRepo.GetCart(id)
+// }
+
+// Ubah return type menjadi []models.ProductCart
+func (s *ProductCartService) GetCart(id int) ([]models.ProductCart, error) {
+	return s.ProductCartRepo.GetCart(id)
+}

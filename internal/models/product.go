@@ -125,3 +125,16 @@ type CartItem struct {
 	VariantName string `json:"variant_name"`
 	SizeName    string `json:"size_name"`
 }
+
+// cart_item_id, product_id, product_name, variant_name, size_name, base_price, quantity, total_price, image_path
+type ProductCart struct {
+	CartItemId  int    `json:"cart_item_id"`
+	ProductId   int    `json:"product_id"`
+	ProductName string `json:"product_name"`
+	VariantName string `json:"variant_name"`
+	SizeName    string `json:"size_name"`
+	BasePrice   int    `json:"base_price"`
+	Quantity    int    `json:"quantity"`
+	TotalPrice  int    `json:"total_price"`
+	ImagePath   string `json:"image_path"`
+}

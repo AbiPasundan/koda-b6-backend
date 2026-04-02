@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
 	"net/http"
@@ -61,4 +62,18 @@ func (h *ProductCartHandler) AddCart(c *gin.Context) {
 		"status":  "success",
 		"message": "Produk berhasil ditambahkan ke keranjang",
 	})
+}
+
+func (h *ProductCartHandler) GetCart(ctx *gin.Context) {
+	id, ok := helper.GetID(ctx)
+	if !ok {
+		return
+	}
+
+	cart, err := h.ProductCartService.GetCart(id)
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
+
+	helper.ResponseOk(ctx, "Success getting Cart data", &cart)
 }
