@@ -16,84 +16,40 @@ func NewProductCartRepository(db *pgxpool.Pool) *ProductCartRepository {
 	return &ProductCartRepository{db: db}
 }
 
-type CartItem struct {
-	CartID      int              `json:"cart_id"`
-	ProductID   int              `json:"product_id"`
-	Quantity    int              `json:"quantity"`
-	ProductName string           `json:"product_name"`
-	BasePrice   int              `json:"base_price"`
-	VariantName []models.Variant `json:"variant_name"`
-	SizeName    []models.Size    `json:"size_name"`
-}
-
-// func (r *ProductCartRepository) GetCart(id int) (models.ProductCart, error) {
-// 	query := `
-// 		SELECT
-// 			ci.cart_item_id,
-// 			ci.product_id,
-// 			ci.product_name,
-// 			ci.variant_name,
-// 			ci.size_name,
-// 			ci.base_price,
-// 			ci.quantity,
-// 			(ci.base_price * ci.quantity) AS total_price,
-// 			pi.path AS image_path
-// 		FROM
-// 			carts c
-// 		JOIN
-// 			cart_items ci ON c.cart_id = ci.cart_id
-// 		LEFT JOIN
-// 			product_images pi ON ci.product_id = pi.product_id
-// 		WHERE
-// 			c.user_id = $1;
-// 	`
-
-// 	rows, err := r.db.Query(context.Background(), query, id)
-
-// 	if err != nil {
-// 		return models.ProductCart{}, err
-// 	}
-// 	defer rows.Close()
-
-// 	result, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.ProductCart])
-
-// 	if err != nil {
-// 		return models.ProductCart{}, err
-// 	}
-// 	return result, nil
-
-// }
-
-// Ubah return type menjadi []models.ProductCart
 func (r *ProductCartRepository) GetCart(id int) ([]models.ProductCart, error) {
 	query := `
-        SELECT 
-            ci.cart_item_id,
-            ci.product_id,
-            ci.product_name,
-            ci.variant_name,
-            ci.size_name,
-            ci.base_price,
-            ci.quantity,
-            (ci.base_price * ci.quantity) AS total_price,
-            pi.path AS image_path
-        FROM 
-            carts c
-        JOIN 
-            cart_items ci ON c.cart_id = ci.cart_id
-        LEFT JOIN 
-            product_images pi ON ci.product_id = pi.product_id
-        WHERE 
-            c.user_id = $1;
+		SELECT 
+			ci.cart_item_id,
+			ci.product_id,
+			ci.product_name,
+			ci.variant_name,
+			ci.size_name,
+			ci.base_price,
+			ci.quantity,
+			d.discount_rate,
+			(ci.base_price * ci.quantity) AS normal_price,
+			((ci.base_price - (ci.base_price * COALESCE(d.discount_rate, 0) / 100)) * ci.quantity) AS discount_price,
+			pi.path AS image_path
+		FROM 
+			carts c
+		JOIN 
+			cart_items ci ON c.cart_id = ci.cart_id
+		LEFT JOIN 
+			product_images pi ON ci.product_id = pi.product_id
+		JOIN 
+			products p ON ci.product_id = p.id
+		LEFT JOIN 
+			discount d ON p.discount = d.discount_id
+		WHERE 
+			c.user_id = $1;
     `
 
 	rows, err := r.db.Query(context.Background(), query, id)
 	if err != nil {
-		return nil, err // Return nil untuk slice
+		return nil, err
 	}
 	defer rows.Close()
 
-	// Gunakan CollectRows untuk mengambil banyak baris
 	results, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.ProductCart])
 	if err != nil {
 		return nil, err

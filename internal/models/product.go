@@ -127,14 +127,17 @@ type CartItem struct {
 }
 
 // cart_item_id, product_id, product_name, variant_name, size_name, base_price, quantity, total_price, image_path
+// cart_item_id, product_id, product_name, variant_name, size_name, base_price, quantity, discount_rate, normal_price, discount_price, image_path
 type ProductCart struct {
-	CartItemId  int    `json:"cart_item_id"`
-	ProductId   int    `json:"product_id"`
-	ProductName string `json:"product_name"`
-	VariantName string `json:"variant_name"`
-	SizeName    string `json:"size_name"`
-	BasePrice   int    `json:"base_price"`
-	Quantity    int    `json:"quantity"`
-	TotalPrice  int    `json:"total_price"`
-	ImagePath   string `json:"image_path"`
+	CartItemId   int    `json:"cart_item_id" db:"cart_item_id"`
+	ProductId    int    `json:"product_id" db:"product_id"`
+	ProductName  string `json:"product_name" db:"product_name"`
+	VariantName  string `json:"variant_name" db:"variant_name"`
+	SizeName     string `json:"size_name" db:"size_name"`
+	BasePrice    int    `json:"base_price" db:"base_price"`
+	Quantity     int    `json:"quantity" db:"quantity"`
+	DiscountRate int    `json:"discount_rate" db:"discount_rate"`
+	NormalPrice  int    `json:"normal_price" db:"normal_price"`
+	TotalPrice   int    `json:"discount_price" db:"discount_price"`
+	ImagePath    string `json:"image_path" db:"image_path"`
 }
