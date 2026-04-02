@@ -19,6 +19,7 @@ type Container struct {
 	CategoryHandler *handler.CategoryHandler
 	AuthHandler     *handler.AuthHandler
 	AddToCart       *handler.ProductCartHandler
+	ProfileHandler  *handler.ProfileHandler
 }
 
 func BuildContainer() *Container {
@@ -27,7 +28,6 @@ func BuildContainer() *Container {
 	// if err != nil {
 	// 	log.Fatal(err.Error())
 	// }
-
 	// conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
 	// if err != nil {
 	// 	log.Fatal(err.Error())
@@ -75,91 +75,18 @@ func BuildContainer() *Container {
 	addToCartService := service.NewProductCartService(addToCartRepo)
 	addToCartHandler := handler.NewProductCartHandler(addToCartService)
 
+	profileRepo := repository.NewUserRepository(pool)
+	profileService := service.NewProfileService(profileRepo)
+	profileHandler := handler.NewProfileHandler(profileService)
+	// profileService := service.ProfileService(profileRepo)
+	// profileHandler := handler.ProfileHandler(profileService)
+
 	return &Container{
 		UserHandler:     userHandler,
 		ProductHandler:  productHandler,
 		CategoryHandler: categoryHandler,
 		AuthHandler:     authHandler,
 		AddToCart:       addToCartHandler,
+		ProfileHandler:  profileHandler,
 	}
 }
-
-// type Container struct {
-// 	UserHandler *handler.UserHandler
-// }
-
-// type ProductContainer struct {
-// 	ProductHandler *handler.ProductHandler
-// }
-
-// type ForgotPassword struct {
-// 	ForgotPasswordHandler *handler.ForgotPasswordHandler
-// }
-
-// func ForgotPasswordContainer() *ForgotPassword {
-// 	godotenv.Load()
-// 	connConfig, err := pgx.ParseConfig("")
-
-// 	if err != nil {
-// 		return nil
-// 	}
-
-// 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-// 	if err != nil {
-// 		return nil
-// 	}
-
-// 	forgotPasswordRepo := repository.NewForgotPasswordRepository(conn)
-// 	userRepo := repository.NewUserRepository(conn)
-// 	forgotPasswordService := service.NewForgotPasswordService(forgotPasswordRepo, userRepo)
-// 	forgotPasswordHandler := handler.NewForgotPasswordHandler(forgotPasswordService)
-// 	return &ForgotPassword{
-// 		ForgotPasswordHandler: forgotPasswordHandler,
-// 	}
-// }
-
-// func BuildContainer() *Container {
-// 	godotenv.Load()
-// 	connConfig, err := pgx.ParseConfig("")
-// 	if err != nil {
-// 		return nil
-// 	}
-
-// 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-// 	if err != nil {
-// 		return nil
-// 	}
-
-// 	userRepo := repository.NewUserRepository(conn)
-
-// 	userService := service.NewUserService(userRepo)
-
-// 	userHandler := handler.NewUserHandler(userService)
-
-// 	return &Container{
-// 		UserHandler: userHandler,
-// 	}
-// }
-
-// func ProductsContainer() *ProductContainer {
-// 	godotenv.Load()
-// 	connConfig, err := pgx.ParseConfig("")
-// 	if err != nil {
-// 		return nil
-// 	}
-
-// 	conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-// 	if err != nil {
-// 		return nil
-// 	}
-
-// 	productRepo := repository.NewProductRepository(conn)
-
-// 	productService := service.NewProductService(productRepo)
-
-// 	productHandler := handler.NewProductHandler(productService)
-
-// 	return &ProductContainer{
-// 		ProductHandler: productHandler,
-// 	}
-// }

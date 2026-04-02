@@ -15,11 +15,13 @@ func NewProfileService(repo *repository.UserRepository) *ProfileService {
 	}
 }
 
-func (s *ProfileService) GetProfile(data models.User) (*models.User, error) {
-	user, err := s.UserRepo.GetUserByEmail(data.Email)
+func (s *ProfileService) GetProfile(email string) (*models.User, error) {
+	user, err := s.UserRepo.GetUserByEmail(email)
 	if err != nil {
 		return nil, err
 	}
+
+	user.Password = ""
 	return &user, nil
 }
 

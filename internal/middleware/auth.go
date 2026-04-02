@@ -54,6 +54,8 @@ func JWTMiddleware() gin.HandlerFunc {
 		c.Set("user_id", claims.UserID)
 		c.Set("role", claims.Role)
 
+		c.Set("userEmail", claims.Email)
+
 		fmt.Println("NOW:", time.Now())
 		fmt.Println("EXP:", claims.ExpiresAt.Time)
 
