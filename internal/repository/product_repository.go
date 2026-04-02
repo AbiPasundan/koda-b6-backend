@@ -165,9 +165,11 @@ func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
 			price,
 			quantity,
 			discount,
-			discount.is_flash_sale
+			discount.is_flash_sale,
+			product_images.path as images
 		from products
 		left join discount on products.id = discount.discount_id
+		left join product_images on products.id = product_images.product_id
 	`)
 
 	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.BrowseProduct])

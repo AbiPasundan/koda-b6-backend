@@ -61,6 +61,7 @@ type BrowseProduct struct {
 	Quantity    *int    `json:"quantity" db:"quantity"`
 	Discount    *int    `json:"discount" db:"discount"`
 	IsFlashSale *bool   `json:"is_flash_sale" db:"is_flash_sale"`
+	Images      *string `json:"images" db:"images"`
 }
 
 // detailproduct
