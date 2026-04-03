@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Product struct {
 	Id          int     `json:"id" db:"id"`
 	Name        *string `json:"product_name" db:"product_name"`
@@ -141,4 +143,12 @@ type ProductCart struct {
 	NormalPrice  int    `json:"normal_price" db:"normal_price"`
 	TotalPrice   int    `json:"discount_price" db:"discount_price"`
 	ImagePath    string `json:"image_path" db:"image_path"`
+}
+
+type HistoryOrder struct {
+	UserId int       `json:"user_id" db:"user_id"`
+	Status string    `json:"status" db:"status"`
+	Total  int       `json:"Total" db:"Total"`
+	Image  string    `json:"Image" db:"Image"`
+	Date   time.Time `json:"created_at" db:"created_at"`
 }

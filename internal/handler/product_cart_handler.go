@@ -77,3 +77,16 @@ func (h *ProductCartHandler) GetCart(ctx *gin.Context) {
 
 	helper.ResponseOk(ctx, "Success getting Cart data", &cart)
 }
+func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
+	// id, ok := helper.GetID(ctx)
+	// if !ok {
+	// 	return
+	// }
+
+	cart, err := h.ProductCartService.GetOrder()
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
+
+	helper.ResponseOk(ctx, "Success getting Order data", &cart)
+}

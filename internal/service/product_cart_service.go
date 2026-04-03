@@ -45,3 +45,7 @@ func (s *ProductCartService) AddCart(ctx context.Context, req models.AddCartRequ
 func (s *ProductCartService) GetCart(id int) ([]models.ProductCart, error) {
 	return s.ProductCartRepo.GetCart(id)
 }
+
+func (s *ProductCartService) GetOrder() ([]models.HistoryOrder, error) {
+	return s.ProductCartRepo.GetOrder()
+}

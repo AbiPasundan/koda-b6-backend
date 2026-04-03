@@ -102,3 +102,20 @@ func (r *ProductCartRepository) AddCart(ctx context.Context, req models.AddCartR
 
 	return tx.Commit(ctx)
 }
+
+func (r *ProductCartRepository) GetOrder() ([]models.HistoryOrder, error) {
+	query := `select orders.user_id, orders.status, orders.total, orders.image_path, orders.created_at from orders;`
+
+	rows, err := r.db.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	results, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.HistoryOrder])
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
