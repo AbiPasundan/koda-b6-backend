@@ -6,6 +6,7 @@ import (
 	"backend/internal/service"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -48,7 +49,10 @@ func (h *ProductHandler) BrowseProduct(ctx *gin.Context) {
 }
 
 func (h *ProductHandler) DetailProduct(ctx *gin.Context) {
-	product, err := h.ProductService.DetailProduct(ctx)
+	idParam := ctx.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+	product, err := h.ProductService.DetailProduct(ctx, id)
 	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
 		return
 	}

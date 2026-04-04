@@ -176,7 +176,7 @@ func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
 	return products, nil
 }
 
-func (p *ProductRepository) DetailProduct() ([]models.DetailProduct, error) {
+func (p *ProductRepository) DetailProduct(id int) ([]models.DetailProduct, error) {
 
 	rows, err := p.db.Query(context.Background(), `
 	SELECT
@@ -212,8 +212,9 @@ func (p *ProductRepository) DetailProduct() ([]models.DetailProduct, error) {
 		WHERE product_id = p.id) AS rating
 
 	FROM products p
-LEFT JOIN discount d ON p.id = d.discount_id;
-	`)
+	LEFT JOIN discount d ON p.id = d.discount_id
+	WHERE p.id = $1;
+	`, id)
 
 	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.DetailProduct])
 

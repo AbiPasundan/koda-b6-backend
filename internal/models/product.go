@@ -144,6 +144,7 @@ type ProductCart struct {
 	BasePrice    int    `json:"base_price" db:"base_price"`
 	Quantity     int    `json:"quantity" db:"quantity"`
 	DiscountRate int    `json:"discount_rate" db:"discount_rate"`
+	IsFlashSale  bool   `json:"is_flash_sale" db:"is_flash_sale"`
 	NormalPrice  int    `json:"normal_price" db:"normal_price"`
 	TotalPrice   int    `json:"discount_price" db:"discount_price"`
 	ImagePath    string `json:"image_path" db:"image_path"`

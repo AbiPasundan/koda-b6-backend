@@ -14,5 +14,5 @@ func ProductUserRoutes(r *gin.Engine, h *handler.ProductHandler) {
 	r.GET("/products", h.Product)
 	r.GET("/browseproducts", h.BrowseProduct)
 	// detail product
-	r.GET("/detailproduct", h.DetailProduct)
+	r.GET("/detailproduct/:id", h.DetailProduct)
 }

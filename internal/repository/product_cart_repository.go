@@ -18,30 +18,15 @@ func NewProductCartRepository(db *pgxpool.Pool) *ProductCartRepository {
 
 func (r *ProductCartRepository) GetCart(id int) ([]models.ProductCart, error) {
 	query := `
-		SELECT 
-			ci.cart_item_id,
-			ci.product_id,
-			ci.product_name,
-			ci.variant_name,
-			ci.size_name,
-			ci.base_price,
-			ci.quantity,
-			d.discount_rate,
-			(ci.base_price * ci.quantity) AS normal_price,
-			((ci.base_price - (ci.base_price * COALESCE(d.discount_rate, 0) / 100)) * ci.quantity) AS discount_price,
-			pi.path AS image_path
-		FROM 
-			carts c
-		JOIN 
-			cart_items ci ON c.cart_id = ci.cart_id
-		LEFT JOIN 
-			product_images pi ON ci.product_id = pi.product_id
-		JOIN 
-			products p ON ci.product_id = p.id
-		LEFT JOIN 
-			discount d ON p.discount = d.discount_id
-		WHERE 
-			c.user_id = $1;
+		SELECT  ci.cart_item_id, ci.product_id, ci.product_name, ci.variant_name, ci.size_name, ci.base_price, ci.quantity, d.discount_rate, d.is_flash_sale, (ci.base_price * ci.quantity) AS normal_price, ((ci.base_price - (ci.base_price * COALESCE(d.discount_rate, 0) / 100)) * ci.quantity) AS discount_price, pi.path AS image_path
+		FROM carts c
+		JOIN cart_items ci ON c.cart_id = ci.cart_id
+		JOIN products p ON ci.product_id = p.id
+		LEFT JOIN discount d ON p.discount = d.discount_id
+
+		LEFT JOIN LATERAL ( SELECT path FROM product_images WHERE product_id = ci.product_id ORDER BY id ASC LIMIT 1 ) pi ON true
+
+		WHERE c.user_id = $1;
     `
 
 	rows, err := r.db.Query(context.Background(), query, id)
