@@ -36,16 +36,24 @@ func (s *ProductCartService) AddCart(ctx context.Context, req models.AddCartRequ
 
 	return nil
 }
-
-// func (s *ProductCartService) GetCart(id int) (models.ProductCart, error) {
-// 	return s.ProductCartRepo.GetCart(id)
-// }
-
-// Ubah return type menjadi []models.ProductCart
 func (s *ProductCartService) GetCart(id int) ([]models.ProductCart, error) {
 	return s.ProductCartRepo.GetCart(id)
 }
 
 func (s *ProductCartService) GetOrder() ([]models.HistoryOrder, error) {
 	return s.ProductCartRepo.GetOrder()
+}
+
+func (s *ProductCartService) AddOrder(ctx context.Context, userID int) (int, error) {
+
+	if userID == 0 {
+		return userID, fmt.Errorf("user tidak valid")
+	}
+
+	orderID, err := s.ProductCartRepo.AddOrder(ctx, userID)
+	if err != nil {
+		return userID, err
+	}
+
+	return orderID, nil
 }

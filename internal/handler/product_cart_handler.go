@@ -78,15 +78,43 @@ func (h *ProductCartHandler) GetCart(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success getting Cart data", &cart)
 }
 func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
-	// id, ok := helper.GetID(ctx)
-	// if !ok {
-	// 	return
-	// }
-
 	cart, err := h.ProductCartService.GetOrder()
 	if helper.NotFoundError(ctx, err) {
 		return
 	}
 
 	helper.ResponseOk(ctx, "Success getting Order data", &cart)
+}
+
+func (h *ProductCartHandler) AddOrder(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	userIDValue, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	userID, ok := userIDValue.(int)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "invalid user id format",
+		})
+		return
+	}
+
+	orderID, err := h.ProductCartService.AddOrder(ctx, userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "checkout berhasil",
+		"order_id": orderID,
+	})
 }

@@ -10,6 +10,7 @@ import (
 func ProductCartRoutes(r *gin.Engine, h *handler.ProductCartHandler) {
 	r.GET("/detailproduct/addcart/:id", h.GetCart)
 	r.GET("/historyorder", h.HistoryOrder)
+	r.POST("/checkout", h.AddOrder)
 	user := r.Group("/user")
 	user.Use(middleware.JWTMiddleware(), middleware.RoleMiddleware("user", "admin"))
 	user.POST("/detailproduct/addcart", h.AddCart)
