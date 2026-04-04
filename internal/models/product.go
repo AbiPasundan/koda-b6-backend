@@ -54,16 +54,20 @@ type ReviewProduct struct {
 	Rating   *int    `json:"ratings" db:"ratings"`
 }
 
+type Images struct {
+	any
+}
+
 // browse product
 type BrowseProduct struct {
-	Id          int     `json:"id" db:"id"`
-	Name        *string `json:"product_name" db:"product_name"`
-	Description *string `json:"product_desc" db:"product_desc"`
-	Price       *int    `json:"price" db:"price"`
-	Quantity    *int    `json:"quantity" db:"quantity"`
-	Discount    *int    `json:"discount" db:"discount"`
-	IsFlashSale *bool   `json:"is_flash_sale" db:"is_flash_sale"`
-	Images      *string `json:"images" db:"images"`
+	Id          int       `json:"id" db:"id"`
+	Name        *string   `json:"product_name" db:"product_name"`
+	Description *string   `json:"product_desc" db:"product_desc"`
+	Price       *int      `json:"price" db:"price"`
+	Quantity    *int      `json:"quantity" db:"quantity"`
+	Discount    *int      `json:"discount" db:"discount"`
+	IsFlashSale *bool     `json:"is_flash_sale" db:"is_flash_sale"`
+	Images      *[]string `json:"images" db:"images"`
 }
 
 // detailproduct

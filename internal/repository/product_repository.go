@@ -158,18 +158,12 @@ func (p *ProductRepository) ProductReview(ctx context.Context) ([]models.ReviewP
 func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
 
 	rows, err := p.db.Query(context.Background(), `
-		select
-			id,
-			product_name,
-			product_desc,
-			price,
-			quantity,
-			discount,
-			discount.is_flash_sale,
-			product_images.path as images
-		from products
-		left join discount on products.id = discount.discount_id
-		left join product_images on products.id = product_images.product_id
+		SELECT p.id, p.product_name, p.product_desc, p.price, p.quantity, p.discount, d.is_flash_sale, COALESCE(ARRAY_AGG(pi.path) FILTER (WHERE pi.path IS NOT NULL), '{}') as images
+		FROM products p
+		LEFT JOIN discount d ON p.id = d.discount_id 
+		LEFT JOIN product_images pi ON p.id = pi.product_id        
+		GROUP BY p.id, d.discount_id, d.is_flash_sale
+		ORDER BY id asc
 	`)
 
 	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.BrowseProduct])
@@ -182,16 +176,6 @@ func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
 	return products, nil
 }
 
-// detail product
-// data:
-// 1. images
-// 2. is flash sale
-// 3. title
-// 4. price and oldprice
-// 5. review star
-// 6. desc
-// 7. size
-// 8. variant
 func (p *ProductRepository) DetailProduct() ([]models.DetailProduct, error) {
 
 	rows, err := p.db.Query(context.Background(), `
