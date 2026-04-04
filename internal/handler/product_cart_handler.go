@@ -4,6 +4,7 @@ import (
 	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -106,6 +107,7 @@ func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
 	if helper.NotFoundError(ctx, err) {
 		return
 	}
+	fmt.Println(cart)
 
 	helper.ResponseOk(ctx, "Success getting Order data", &cart)
 }

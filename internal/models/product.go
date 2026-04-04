@@ -148,7 +148,7 @@ type ProductCart struct {
 type HistoryOrder struct {
 	UserId int       `json:"user_id" db:"user_id"`
 	Status string    `json:"status" db:"status"`
-	Total  int       `json:"Total" db:"Total"`
-	Image  string    `json:"Image" db:"Image"`
+	Total  int       `json:"Total" db:"total"`
+	Image  string    `json:"Image" db:"image_path"`
 	Date   time.Time `json:"created_at" db:"created_at"`
 }
