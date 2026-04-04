@@ -19,3 +19,7 @@ type AddCartRequest struct {
 	VariantName string `json:"variant_name"`
 	SizeName    string `json:"size_name"`
 }
+
+type DeleteCartItem struct {
+	ProductID int `json:"cart_item_id" db:"cart_item_id" binding:"required"`
+}

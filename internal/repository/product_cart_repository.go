@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/internal/models"
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -86,6 +87,20 @@ func (r *ProductCartRepository) AddCart(ctx context.Context, req models.AddCartR
 	}
 
 	return tx.Commit(ctx)
+}
+func (r *ProductCartRepository) DeleteCart(id int) error {
+	query := `DELETE FROM cart_items WHERE cart_item_id = $1`
+
+	result, err := r.db.Exec(context.Background(), query, id)
+	if err != nil {
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return errors.New("no cart found with this id")
+	}
+
+	return nil
 }
 
 func (r *ProductCartRepository) GetOrder(id int) ([]models.HistoryOrder, error) {

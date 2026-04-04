@@ -40,6 +40,10 @@ func (s *ProductCartService) GetCart(id int) ([]models.ProductCart, error) {
 	return s.ProductCartRepo.GetCart(id)
 }
 
+func (s *ProductCartService) DeleteCartById(id int) error {
+	return s.ProductCartRepo.DeleteCart(id)
+}
+
 func (s *ProductCartService) GetOrder(id int) ([]models.HistoryOrder, error) {
 	return s.ProductCartRepo.GetOrder(id)
 }

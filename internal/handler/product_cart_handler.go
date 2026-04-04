@@ -31,40 +31,29 @@ type AddToCartRequest struct {
 	SizeName    string `json:"size_name"`
 }
 
-func (h *ProductCartHandler) AddCart(c *gin.Context) {
+func (h *ProductCartHandler) AddCart(ctx *gin.Context) {
 	var req models.AddCartRequest
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "error",
-			"message": "Format data tidak valid atau ada data yang kurang",
-			"error":   err.Error(),
-		})
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		helper.BadRequest(ctx, "Invalid request body", nil, err)
 		return
 	}
 
-	userID, exists := c.Get("user_id")
+	userID, exists := ctx.Get("user_id")
 
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		helper.CustomeError(ctx, http.StatusUnauthorized, "Unauthorized", nil, nil)
 		return
 	}
 	req.UserID = userID.(int)
 
-	err := h.ProductCartService.AddCart(c.Request.Context(), req)
+	err := h.ProductCartService.AddCart(ctx.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  "error",
-			"message": "Gagal memproses keranjang belanja",
-			"error":   err.Error(),
-		})
+		helper.InternalServerError(ctx, "Unauthorized", err.Error(), err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"status":  "success",
-		"message": "Produk berhasil ditambahkan ke keranjang",
-	})
+	helper.ResponseOk(ctx, "Success Delete Cart Item", nil)
 }
 
 func (h *ProductCartHandler) GetCart(ctx *gin.Context) {
@@ -79,6 +68,22 @@ func (h *ProductCartHandler) GetCart(ctx *gin.Context) {
 	}
 
 	helper.ResponseOk(ctx, "Success getting Cart data", &cart)
+}
+
+func (h *ProductCartHandler) DeleteCart(ctx *gin.Context) {
+	var id models.DeleteCartItem
+
+	if err := ctx.ShouldBindJSON(&id); err != nil {
+		helper.BadRequest(ctx, "Invalid request body", nil, err)
+		return
+	}
+
+	err := h.ProductCartService.DeleteCartById(id.ProductID)
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
+
+	helper.ResponseOk(ctx, fmt.Sprintf("Success delete cart with id: %d", id.ProductID), nil)
 }
 
 func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
