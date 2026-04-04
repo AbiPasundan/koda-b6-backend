@@ -5,8 +5,10 @@ import (
 	"backend/internal/models"
 	"backend/internal/service"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type ProductCartHandler struct {
@@ -77,8 +79,30 @@ func (h *ProductCartHandler) GetCart(ctx *gin.Context) {
 
 	helper.ResponseOk(ctx, "Success getting Cart data", &cart)
 }
+
 func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
-	cart, err := h.ProductCartService.GetOrder()
+	authHeader := ctx.Request.Header.Get("Authorization")
+
+	tokenString, found := strings.CutPrefix(authHeader, "Bearer ")
+	if !found || tokenString == "" {
+		ctx.JSON(401, gin.H{"error": "Missing or invalid token"})
+		return
+	}
+
+	claims := jwt.MapClaims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
+		return []byte("SECRET_KEY"), nil
+	})
+
+	if err != nil || !token.Valid {
+		ctx.JSON(401, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	userID := int(claims["user_id"].(float64))
+
+	cart, err := h.ProductCartService.GetOrder(userID)
 	if helper.NotFoundError(ctx, err) {
 		return
 	}
@@ -86,35 +110,26 @@ func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success getting Order data", &cart)
 }
 
-func (h *ProductCartHandler) AddOrder(c *gin.Context) {
-	ctx := c.Request.Context()
+func (h *ProductCartHandler) AddOrder(ctx *gin.Context) {
+	test := ctx.Request.Context()
 
-	userIDValue, exists := c.Get("user_id")
+	userIDValue, exists := ctx.Get("user_id")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "unauthorized",
-		})
+		helper.CustomeError(ctx, http.StatusUnauthorized, "Unauthorized", nil, nil)
 		return
 	}
 
 	userID, ok := userIDValue.(int)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "invalid user id format",
-		})
+		helper.BadRequest(ctx, "Invalid user ID ", nil, nil)
 		return
 	}
 
-	orderID, err := h.ProductCartService.AddOrder(ctx, userID)
+	orderID, err := h.ProductCartService.AddOrder(test, userID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		helper.BadRequest(ctx, "Cart Masi Kosong ", nil, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message":  "checkout berhasil",
-		"order_id": orderID,
-	})
+	helper.ResponseOk(ctx, "Success", orderID)
 }

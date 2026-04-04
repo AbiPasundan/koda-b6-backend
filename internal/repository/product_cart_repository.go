@@ -103,10 +103,10 @@ func (r *ProductCartRepository) AddCart(ctx context.Context, req models.AddCartR
 	return tx.Commit(ctx)
 }
 
-func (r *ProductCartRepository) GetOrder() ([]models.HistoryOrder, error) {
-	query := `select orders.user_id, orders.status, orders.total, orders.image_path, orders.created_at from orders;`
+func (r *ProductCartRepository) GetOrder(id int) ([]models.HistoryOrder, error) {
+	query := `select orders.user_id, orders.status, orders.total, orders.image_path, orders.created_at from orders where user_id = $1`
 
-	rows, err := r.db.Query(context.Background(), query)
+	rows, err := r.db.Query(context.Background(), query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func (r *ProductCartRepository) AddOrder(ctx context.Context, userID int) (int, 
 	}
 	defer tx.Rollback(ctx)
 
-	var orderID int
+	var orderID string
 	err = tx.QueryRow(ctx, `
 		INSERT INTO orders (user_id, status, total, image_path)
 		SELECT 

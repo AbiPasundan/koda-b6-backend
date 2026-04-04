@@ -40,14 +40,14 @@ func (s *ProductCartService) GetCart(id int) ([]models.ProductCart, error) {
 	return s.ProductCartRepo.GetCart(id)
 }
 
-func (s *ProductCartService) GetOrder() ([]models.HistoryOrder, error) {
-	return s.ProductCartRepo.GetOrder()
+func (s *ProductCartService) GetOrder(id int) ([]models.HistoryOrder, error) {
+	return s.ProductCartRepo.GetOrder(id)
 }
 
 func (s *ProductCartService) AddOrder(ctx context.Context, userID int) (int, error) {
 
 	if userID == 0 {
-		return userID, fmt.Errorf("user tidak valid")
+		return userID, fmt.Errorf("Login Heula")
 	}
 
 	orderID, err := s.ProductCartRepo.AddOrder(ctx, userID)
