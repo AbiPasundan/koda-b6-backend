@@ -61,3 +61,7 @@ func (s *ProductCartService) AddOrder(ctx context.Context, userID int) (int, err
 
 	return orderID, nil
 }
+
+func (s *ProductCartService) GetOrderById(id string) ([]models.DetailOrder, error) {
+	return s.ProductCartRepo.GetOrderById(id)
+}

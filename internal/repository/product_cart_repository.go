@@ -173,3 +173,28 @@ func (r *ProductCartRepository) AddOrder(ctx context.Context, userID int) (int, 
 
 	return userID, tx.Commit(ctx)
 }
+
+func (r *ProductCartRepository) GetOrderById(id string) ([]models.DetailOrder, error) {
+	query := `
+        SELECT u.full_name, u.address, u.phone,  o.status, o.total, o.image_path AS order_image,  oi.order_id, oi.quantity, oi.variant, oi.size, oi.product_name,  oi.price AS current_price, p.price AS base_price,  d.is_flash_sale
+        FROM order_items oi
+        JOIN orders o ON oi.order_id = o.id
+        LEFT JOIN users u ON o.user_id = u.id
+        LEFT JOIN products p ON oi.product_id = p.id
+        LEFT JOIN discount d ON p.discount = d.discount_id
+        WHERE oi.order_id = $1;	
+    `
+
+	rows, err := r.db.Query(context.Background(), query, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	results, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.DetailOrder])
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}

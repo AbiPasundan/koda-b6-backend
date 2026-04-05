@@ -140,3 +140,14 @@ func (h *ProductCartHandler) AddOrder(ctx *gin.Context) {
 
 	helper.ResponseOk(ctx, "Success", orderID)
 }
+
+func (h *ProductCartHandler) GetOrderById(ctx *gin.Context) {
+	i := ctx.Param("id")
+
+	cart, err := h.ProductCartService.GetOrderById(i)
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
+
+	helper.ResponseOk(ctx, "Success getting Order data", &cart)
+}

@@ -157,3 +157,21 @@ type HistoryOrder struct {
 	Image  string    `json:"Image" db:"image_path"`
 	Date   time.Time `json:"created_at" db:"created_at"`
 }
+
+// full_name, address, phone, status, total, order_image, order_id, quantity, variant, size, product_name, current_size, base_price, is_flash_sale
+type DetailOrder struct {
+	FullName     *string `json:"full_name" db:"full_name"`
+	Address      *string `json:"address" db:"address"`
+	Phone        *string `json:"phone" db:"phone"`
+	Status       *string `json:"status" db:"status"`
+	Total        *int    `json:"total" db:"total"`
+	OrderImage   *string `json:"order_image" db:"order_image"`
+	OrderID      *string `json:"order_id" db:"order_id"`
+	Quantity     *int    `json:"quantity" db:"quantity"`
+	Variant      *string `json:"variant" db:"variant"`
+	Size         *string `json:"size" db:"size"`
+	ProductName  *string `json:"product_name" db:"product_name"`
+	CurrentPrice *int    `json:"current_price" db:"current_price"`
+	BasePrice    *int    `json:"base_price" db:"base_price"`
+	IsFlashSale  *bool   `json:"is_flash_sale" db:"is_flash_sale"`
+}
