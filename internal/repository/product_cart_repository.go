@@ -104,7 +104,7 @@ func (r *ProductCartRepository) DeleteCart(id int) error {
 }
 
 func (r *ProductCartRepository) GetOrder(id int) ([]models.HistoryOrder, error) {
-	query := `select orders.user_id, orders.status, orders.total, orders.image_path, orders.created_at from orders where user_id = $1`
+	query := `select orders.id, orders.status, orders.total, orders.image_path, orders.created_at from orders where user_id = $1`
 
 	rows, err := r.db.Query(context.Background(), query, id)
 	if err != nil {

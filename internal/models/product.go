@@ -151,7 +151,7 @@ type ProductCart struct {
 }
 
 type HistoryOrder struct {
-	UserId int       `json:"user_id" db:"user_id"`
+	UserId string    `json:"id" db:"id"`
 	Status string    `json:"status" db:"status"`
 	Total  int       `json:"Total" db:"total"`
 	Image  string    `json:"Image" db:"image_path"`
