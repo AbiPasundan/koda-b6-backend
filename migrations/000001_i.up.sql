@@ -87,33 +87,33 @@ CREATE TABLE IF NOT EXISTS reviews (
 );
 
 CREATE TABLE IF NOT EXISTS orders (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id VARCHAR(255) DEFAULT (
+        to_char(CURRENT_TIMESTAMP, 'YYYY-MM-HH24missMS') || '-' || LPAD(floor(random() * 1000)::text, 3, '0')
+    ) PRIMARY KEY,
     user_id INT,
-    delivery_method VARCHAR(255),
-    full_name VARCHAR(255),
-    email VARCHAR(255),
-    address TEXT,
-    sub_total INT,
-    delivery_fee INT,
-    tax INT,
+    status VARCHAR(50) CHECK (status IN ('pending', 'paid', 'done', 'cancelled')),
     total INT,
-    date TIMESTAMP DEFAULT NOW(),
-    status VARCHAR(255),
-    payment_method INT,
-
+    image_path VARCHAR(255),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS order_items (
-    order_item_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    order_id INT,
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    order_id VARCHAR(255),
+  
     product_id INT,
-    quantity INT,
-    price INT NOT NULL,  
-    product_name VARCHAR(255), 
-    variant_name VARCHAR(255),
-
-
+    product_name VARCHAR(255),
+    quantity INT DEFAULT 1,
+    price INT,
+    size VARCHAR(50),
+    variant VARCHAR(50),
+    image_path VARCHAR(255),
+  
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+  
     CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     CONSTRAINT fk_product_order_items FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
 );
@@ -144,5 +144,6 @@ CREATE TABLE IF NOT EXISTS cart_items (
     REFERENCES carts(cart_id) ON DELETE CASCADE,
 
     CONSTRAINT fk_product_cart_items FOREIGN KEY (product_id)
-    REFERENCES products(id) ON DELETE CASCADE
+    REFERENCES products(id) ON DELETE CASCADE,
+    UNIQUE (cart_id, product_id, variant_name, size_name)
 );
