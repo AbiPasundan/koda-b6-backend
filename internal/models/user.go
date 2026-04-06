@@ -3,11 +3,12 @@ package models
 import "time"
 
 type Users struct {
-	Id        int     `db:"id"`
-	Full_Name string  `db:"full_name"`
-	Email     string  `db:"email"`
-	Address   *string `db:"address"`
-	Phone     *string `db:"phone"`
+	Id        int     `json:"id" db:"id"`
+	Full_Name string  `json:"full_name" db:"full_name"`
+	Email     string  `json:"email" db:"email"`
+	Address   *string `json:"address" db:"address"`
+	Phone     *string `json:"phone" db:"phone"`
+	Pictures  *string `json:"pictures" db:"pictures"`
 }
 
 // ("id", "full_name", "email", "password", "address", "phone", "pictures")

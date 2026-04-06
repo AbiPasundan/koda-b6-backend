@@ -21,8 +21,7 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 func (u *UserRepository) GetAllUsers() ([]models.Users, error) {
 
 	rows, err := u.db.Query(context.Background(), `
-		SELECT id, full_name, email, address, phone
-		FROM users
+		SELECT id, full_name, email, address, phone, pictures FROM users;
 	`)
 	if err != nil {
 		return nil, err
@@ -102,4 +101,16 @@ func (u *UserRepository) UpdatePasswordByEmail(email string, newPassword string)
 	`, newPassword, email)
 
 	return err
+}
+
+func (u *UserRepository) UpdateProfile(id int, user models.User) (models.User, error) {
+	rows, err := u.db.Query(context.Background(), `
+		UPDATE users SET full_name = $1, email = $2, password = $3, address = $4, phone = $5, pictures = $6 WHERE id = $7 RETURNING id, full_name, email, password, address, phone, pictures
+	`, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures, id)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
 }
