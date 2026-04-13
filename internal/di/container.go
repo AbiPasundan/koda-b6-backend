@@ -5,15 +5,17 @@ import (
 	"backend/internal/repository"
 	"backend/internal/service"
 	"context"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 )
 
 type Container struct {
 	Pool            *pgxpool.Pool
+	rdb             *redis.Client
 	UserHandler     *handler.UserHandler
 	ProductHandler  *handler.ProductHandler
 	CategoryHandler *handler.CategoryHandler
@@ -23,26 +25,23 @@ type Container struct {
 	OrderHandler    *handler.OrderHandler
 }
 
+type configRedis struct {
+	rdbhost     string
+	rdbport     string
+	rdbpassword string
+}
+
 func BuildContainer() *Container {
-	// godotenv.Load()
-	// connConfig, err := pgx.ParseConfig("")
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
-	// conn, err := pgx.Connect(context.Background(), connConfig.ConnString())
-	// if err != nil {
-	// 	log.Fatal(err.Error())
-	// }
+	redisAddr := os.Getenv("REDIS_HOST")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	redisPort := os.Getenv("REDIS_PORT")
 
-	// godotenv.Load()
-	// dbURL := os.Getenv("DATABASE_URL")
-
-	// pool, err := pgxpool.New(context.Background(), dbURL)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%s", redisAddr, redisPort), // (redisAddr),
+		Password: redisPassword,
+	})
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
+		log.Fatalf("Redis tidak merespon: %v", err)
 	}
 
 	databaseURL := os.Getenv("DATABASE_URL")
@@ -63,7 +62,7 @@ func BuildContainer() *Container {
 	}
 	log.Println("Berhasil terhubung menggunakan connection pool!")
 
-	userRepo := repository.NewUserRepository(pool)
+	userRepo := repository.NewUserRepository(pool, rdb)
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
@@ -83,7 +82,7 @@ func BuildContainer() *Container {
 	addToCartService := service.NewProductCartService(addToCartRepo)
 	addToCartHandler := handler.NewProductCartHandler(addToCartService)
 
-	profileRepo := repository.NewUserRepository(pool)
+	profileRepo := repository.NewUserRepository(pool, rdb)
 	profileService := service.NewProfileService(profileRepo)
 	profileHandler := handler.NewProfileHandler(profileService)
 
@@ -92,6 +91,8 @@ func BuildContainer() *Container {
 	orderHandler := handler.NewOrderHandler(OrderService)
 
 	return &Container{
+		Pool:            pool,
+		rdb:             rdb,
 		UserHandler:     userHandler,
 		ProductHandler:  productHandler,
 		CategoryHandler: categoryHandler,

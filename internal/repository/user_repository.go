@@ -2,33 +2,74 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"log"
+	"time"
 
 	"backend/internal/models"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
 type UserRepository struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	rdb *redis.Client
 }
 
-func NewUserRepository(db *pgxpool.Pool) *UserRepository {
-	return &UserRepository{db: db}
+func NewUserRepository(db *pgxpool.Pool, rdb *redis.Client) *UserRepository {
+	return &UserRepository{db: db, rdb: rdb}
 }
 
 func (u *UserRepository) GetAllUsers() ([]models.Users, error) {
+	ctx := context.Background()
+	cacheKey := "users:all"
 
-	rows, err := u.db.Query(context.Background(), `
+	val, err := u.rdb.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var users []models.Users
+		if err := json.Unmarshal([]byte(val), &users); err == nil {
+			log.Println("Cache HIT: users")
+			return users, nil
+		}
+	}
+
+	log.Println("Cache MISS: users")
+
+	rows, err := u.db.Query(ctx, `
 		SELECT id, full_name, email, address, phone, pictures FROM users;
 	`)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
+	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := json.Marshal(users)
+	if err == nil {
+		u.rdb.Set(ctx, cacheKey, data, 5*time.Minute)
+	}
+
+	return users, nil
 }
+
+// func (u *UserRepository) GetAllUsers() ([]models.Users, error) {
+
+// 	rows, err := u.db.Query(context.Background(), `
+// 		SELECT id, full_name, email, address, phone, pictures FROM users;
+// 	`)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.Users])
+// }
 
 func (u *UserRepository) GetUserById(id int) (models.User, error) {
 	rows, err := u.db.Query(context.Background(), `

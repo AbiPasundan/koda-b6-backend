@@ -3,10 +3,13 @@ package service
 import (
 	"backend/internal/models"
 	"backend/internal/repository"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type UserService struct {
 	UserRepo *repository.UserRepository
+	rdb      *redis.Client
 }
 
 func NewUserService(repo *repository.UserRepository) *UserService {
