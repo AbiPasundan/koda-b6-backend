@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"backend/internal/helper"
+	"backend/internal/models"
 	"backend/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -30,4 +32,23 @@ func (h *ProfileHandler) GetMyProfile(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, user)
+}
+
+func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
+	id := 1
+
+	var updateUser models.User
+	if err := ctx.ShouldBindJSON(&updateUser); err != nil {
+		helper.BadRequest(ctx, "Invalid request body", nil, err)
+		return
+	}
+
+	createUser, err := h.UserService.AddUser(updateUser)
+	if helper.NotFoundError(ctx, err) {
+		return
+	}
+
+	h.UserService.UpdateUserById(id, createUser)
+
+	helper.ResponseOk(ctx, "Succes Updated User", createUser)
 }

@@ -20,6 +20,7 @@ type Container struct {
 	AuthHandler     *handler.AuthHandler
 	AddToCart       *handler.ProductCartHandler
 	ProfileHandler  *handler.ProfileHandler
+	OrderHandler    *handler.OrderHandler
 }
 
 func BuildContainer() *Container {
@@ -32,12 +33,19 @@ func BuildContainer() *Container {
 	// if err != nil {
 	// 	log.Fatal(err.Error())
 	// }
+
+	// godotenv.Load()
+	// dbURL := os.Getenv("DATABASE_URL")
+
+	// pool, err := pgxpool.New(context.Background(), dbURL)
+	// if err != nil {
+	// 	panic(err)
+	// }
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
 	databaseURL := os.Getenv("DATABASE_URL")
-
 	config, err := pgxpool.ParseConfig(databaseURL)
 	if err != nil {
 		log.Fatalf("Gagal parse config: %v", err)
@@ -78,8 +86,10 @@ func BuildContainer() *Container {
 	profileRepo := repository.NewUserRepository(pool)
 	profileService := service.NewProfileService(profileRepo)
 	profileHandler := handler.NewProfileHandler(profileService)
-	// profileService := service.ProfileService(profileRepo)
-	// profileHandler := handler.ProfileHandler(profileService)
+
+	orderRepo := repository.NewOrderRepository(pool)
+	OrderService := service.NewOrderService(orderRepo)
+	orderHandler := handler.NewOrderHandler(OrderService)
 
 	return &Container{
 		UserHandler:     userHandler,
@@ -88,5 +98,6 @@ func BuildContainer() *Container {
 		AuthHandler:     authHandler,
 		AddToCart:       addToCartHandler,
 		ProfileHandler:  profileHandler,
+		OrderHandler:    orderHandler,
 	}
 }

@@ -25,6 +25,6 @@ func (s *ProfileService) GetProfile(email string) (*models.User, error) {
 	return &user, nil
 }
 
-// func (s *ProfileService) UpdateProfile(data *models.User) (*models.User, error) {
-// 	return s.UserRepo.UpdateUserById(data.Id, *data)
-// }
+func (u *UserService) UpdateUser(id int, user models.User) {
+	u.UserRepo.UpdateProfile(id, user)
+}
