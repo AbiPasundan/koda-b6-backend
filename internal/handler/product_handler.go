@@ -39,6 +39,17 @@ func (h *ProductHandler) Product(ctx *gin.Context) {
 
 	helper.ResponseOk(ctx, "Success get Data Product", &product)
 }
+
+// BrowseProduct godoc
+//
+//	@Summary		Get Browse Product
+//	@Description	Retrieve Browse Product from the system
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		500	{object}	models.Response
+//	@Router			/browseproduct [get]
 func (h *ProductHandler) BrowseProduct(ctx *gin.Context) {
 	product, err := h.ProductService.BrowseProducts(ctx)
 	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {

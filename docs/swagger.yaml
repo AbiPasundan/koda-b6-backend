@@ -2,9 +2,9 @@ basePath: /api/v1
 definitions:
   models.Response:
     properties:
-      any: {}
       message:
         type: string
+      results: {}
       success:
         type: boolean
     type: object
@@ -20,23 +20,15 @@ definitions:
         type: integer
       phone:
         type: string
+      pictures:
+        type: string
     type: object
-externalDocs:
-  description: OpenAPI
-  url: https://swagger.io/resources/open-api/
-host: localhost:8080
+host: localhost:8888
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
-  description: This is a sample server celler server.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: Swagger Example API
-  version: "1.0"
+  contact: {}
+  description: coffe shop project
+  title: Coffee Shop API
+  version: 1.0.0
 paths:
   /:
     get:
@@ -55,6 +47,25 @@ paths:
           schema:
             $ref: '#/definitions/models.Response'
       summary: Get All Product
+      tags:
+      - products
+  /browseproduct:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Browse Product from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get Browse Product
       tags:
       - products
   /users:
@@ -132,7 +143,4 @@ paths:
       summary: Get user by ID
       tags:
       - users
-securityDefinitions:
-  BasicAuth:
-    type: basic
 swagger: "2.0"

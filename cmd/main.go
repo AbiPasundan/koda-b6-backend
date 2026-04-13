@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "backend/cmd/docs"
+	_ "backend/docs"
 	container "backend/internal/di"
 	"backend/internal/middleware"
 	"backend/internal/routes"
@@ -17,7 +17,7 @@ import (
 //	@title			Coffee Shop API
 //	@version		1.0.0
 //	@description	coffe shop project
-//	@host			localhost:8889
+//	@host			localhost:8888
 //	@BasePath		/api/v1
 
 func main() {
