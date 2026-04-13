@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"time"
 
 	"backend/internal/models"
 
@@ -51,9 +50,15 @@ func (u *UserRepository) GetAllUsers() ([]models.Users, error) {
 		return nil, err
 	}
 
-	data, err := json.Marshal(users)
-	if err == nil {
-		u.rdb.Set(ctx, cacheKey, data, 5*time.Minute)
+	// data, err := json.Marshal(users)
+	// if err == nil {
+	// 	u.rdb.Set(ctx, cacheKey, data, 5*time.Minute)
+	// }
+	if err := json.Unmarshal([]byte(val), &users); err == nil {
+		log.Println("Cache HIT: users")
+		return users, nil
+	} else {
+		log.Println("Unmarshal error:", err)
 	}
 
 	return users, nil

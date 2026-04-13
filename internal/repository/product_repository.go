@@ -3,18 +3,23 @@ package repository
 import (
 	"backend/internal/models"
 	"context"
+	"encoding/json"
 	"errors"
+	"log"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
 type ProductRepository struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	rdb *redis.Client
 }
 
-func NewProductRepository(db *pgxpool.Pool) *ProductRepository {
-	return &ProductRepository{db: db}
+func NewProductRepository(db *pgxpool.Pool, rdb *redis.Client) *ProductRepository {
+	return &ProductRepository{db: db, rdb: rdb}
 }
 
 func (p *ProductRepository) GetAllProduct() ([]models.Product, error) {
@@ -156,8 +161,21 @@ func (p *ProductRepository) ProductReview(ctx context.Context) ([]models.ReviewP
 
 // repository browse product
 func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
+	ctx := context.Background()
+	cacheKey := "product:browseproduct"
 
-	rows, err := p.db.Query(context.Background(), `
+	val, err := p.rdb.Get(ctx, cacheKey).Result()
+	if err == nil {
+		var products []models.BrowseProduct
+		if err := json.Unmarshal([]byte(val), &products); err == nil {
+			log.Println("Cache HIT: products")
+			return products, nil
+		}
+	}
+
+	log.Println("Cache MISS: products")
+
+	rows, err := p.db.Query(ctx, `
 		SELECT p.id, p.product_name, p.product_desc, p.price, p.quantity, p.discount, d.is_flash_sale, COALESCE(ARRAY_AGG(pi.path) FILTER (WHERE pi.path IS NOT NULL), '{}') as images
 		FROM products p
 		LEFT JOIN discount d ON p.id = d.discount_id 
@@ -165,13 +183,24 @@ func (p *ProductRepository) BrowseProducts() ([]models.BrowseProduct, error) {
 		GROUP BY p.id, d.discount_id, d.is_flash_sale
 		ORDER BY id asc
 	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
 	products, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[models.BrowseProduct])
 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+
+	data, err := json.Marshal(products)
+	if err == nil {
+		log.Println("Cache HIT: users")
+		p.rdb.Set(ctx, cacheKey, data, 5*time.Minute)
+	} else {
+		log.Println("Unmarshal error:", err)
+	}
 
 	return products, nil
 }

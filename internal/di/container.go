@@ -66,7 +66,7 @@ func BuildContainer() *Container {
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
-	productRepo := repository.NewProductRepository(pool)
+	productRepo := repository.NewProductRepository(pool, rdb)
 	productService := service.NewProductService(productRepo)
 	productHandler := handler.NewProductHandler(productService)
 
