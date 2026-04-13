@@ -1,5 +1,20 @@
 basePath: /api/v1
 definitions:
+  models.Product:
+    properties:
+      discount:
+        type: integer
+      id:
+        type: integer
+      price:
+        type: integer
+      product_desc:
+        type: string
+      product_name:
+        type: string
+      quantity:
+        type: integer
+    type: object
   models.Response:
     properties:
       message:
@@ -49,6 +64,36 @@ paths:
       summary: Get All Product
       tags:
       - products
+  /admin/products:
+    post:
+      consumes:
+      - application/json
+      description: Add a new product to the system
+      parameters:
+      - description: Product Data
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Add Product
+      tags:
+      - products
   /browseproduct:
     get:
       consumes:
@@ -66,6 +111,44 @@ paths:
           schema:
             $ref: '#/definitions/models.Response'
       summary: Get Browse Product
+      tags:
+      - products
+  /products/home:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Product Home from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get Product Home
+      tags:
+      - products
+  /products/reviews:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Product Reviews from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get Product Reviews
       tags:
       - products
   /users:

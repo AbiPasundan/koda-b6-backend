@@ -71,6 +71,16 @@ func (h *ProductHandler) DetailProduct(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success get browse Data Product", &product)
 }
 
+// Product Home godoc
+//
+//	@Summary		Get Product Home
+//	@Description	Retrieve Product Home from the system
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		500	{object}	models.Response
+//	@Router			/products/home [get]
 func (h *ProductHandler) ProductHome(ctx *gin.Context) {
 	product, err := h.ProductService.GetProductHome(ctx)
 	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
@@ -80,6 +90,16 @@ func (h *ProductHandler) ProductHome(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success get Data Product", &product)
 }
 
+// Product Reviews godoc
+//
+//	@Summary		Get Product Reviews
+//	@Description	Retrieve Product Reviews from the system
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		500	{object}	models.Response
+//	@Router			/products/reviews [get]
 func (h *ProductHandler) ProductReview(ctx *gin.Context) {
 	product, err := h.ProductService.ProductReview(ctx)
 	if helper.InternalServerError(ctx, "Internal Server Error", product, err) {
@@ -109,6 +129,18 @@ func (h *ProductHandler) SearchProductById(ctx *gin.Context) {
 	})
 }
 
+// AddProduct godoc
+//
+//	@Summary		Add Product
+//	@Description	Add a new product to the system
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Param			product	body		models.Product	true	"Product Data"
+//	@Success		200		{object}	models.Response
+//	@Failure		400		{object}	models.Response
+//	@Failure		500		{object}	models.Response
+//	@Router			/admin/products [post]
 func (h *ProductHandler) AddProduct(ctx *gin.Context) {
 	var newProducts models.Product
 
