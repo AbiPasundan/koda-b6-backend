@@ -112,6 +112,17 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success Create User", nil)
 }
 
+// RequestForgotPassword godoc
+//
+//	@Summary		Request forgot password
+//	@Description	Request OTP for password reset
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			req	body		models.AuthForgotPassword	true	"Forgot password request"
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Router			/auth/forgot-password [post]
 func (h *AuthHandler) RequestForgotPassword(ctx *gin.Context) {
 	var req models.AuthForgotPassword
 	if err := ctx.ShouldBindJSON(&req); err != nil {
