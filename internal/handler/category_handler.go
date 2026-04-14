@@ -23,12 +23,13 @@ func NewCategoryHandler(service *service.CategoryService) *CategoryHandler {
 //
 //	@Summary		Get All Category
 //	@Description	Retrieve all category from the database
-//	@Tags			products
+//	@Tags			category
 //	@Accept			json
 //	@Produce		json
+//	@Security		BearerAuth
 //	@Success		200	{object}	models.Response
 //	@Failure		500	{object}	models.Response
-//	@Router			/ [get]
+//	@Router			/admin/category [get]
 func (h *CategoryHandler) Category(ctx *gin.Context) {
 	category, err := h.CategoryService.GetCategory()
 	statusInternal := helper.InternalServerError(ctx, "Internal Server Error", category, err)
@@ -39,6 +40,18 @@ func (h *CategoryHandler) Category(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success get All Data Category", &category)
 }
 
+// SearchCategoryById godoc
+//
+//	@Summary		Get Category by ID
+//	@Description	Retrieve a single category by its ID parameter
+//	@Tags			category
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int	true	"Category ID"
+//	@Success		200	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/admin/category/{id} [get]
 func (h *CategoryHandler) SearchCategoryById(ctx *gin.Context) {
 	id, ok := helper.GetID(ctx)
 	if !ok {
@@ -54,6 +67,19 @@ func (h *CategoryHandler) SearchCategoryById(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success get Data Category", &category)
 }
 
+// AddCategory godoc
+//
+//	@Summary		Add Category
+//	@Description	Create a new category
+//	@Tags			category
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			category	body		models.Category	true	"Category Data"
+//	@Success		200			{object}	models.Response
+//	@Failure		400			{object}	models.Response
+//	@Failure		500			{object}	models.Response
+//	@Router			/admin/category [post]
 func (h *CategoryHandler) AddCategory(ctx *gin.Context) {
 	var newCategory models.Category
 
@@ -70,6 +96,20 @@ func (h *CategoryHandler) AddCategory(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success Add Category", createCategory)
 }
 
+// UpdateCategory godoc
+//
+//	@Summary		Update Category
+//	@Description	Update an existing category by ID
+//	@Tags			category
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id			path		int				true	"Category ID"
+//	@Param			category	body		models.Category	true	"Category Data"
+//	@Success		200			{object}	models.Response
+//	@Failure		400			{object}	models.Response
+//	@Failure		404			{object}	models.Response
+//	@Router			/admin/category/{id} [put]
 func (h *CategoryHandler) UpdateCategory(ctx *gin.Context) {
 	var Category models.Category
 
@@ -91,6 +131,17 @@ func (h *CategoryHandler) UpdateCategory(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Successfully Updated Category", updatedCategory)
 }
 
+// DeleteCategory godoc
+//
+//	@Summary		Delete Category
+//	@Description	Delete category by ID
+//	@Tags			category
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			id	path		int	true	"Category ID"
+//	@Success		200	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/admin/category/{id} [delete]
 func (h *CategoryHandler) DeleteCategory(ctx *gin.Context) {
 	id, ok := helper.GetID(ctx)
 	if !ok {
