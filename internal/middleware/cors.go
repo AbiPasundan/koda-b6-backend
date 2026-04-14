@@ -2,56 +2,57 @@ package middleware
 
 import (
 	"net/http"
+	"os"
+	"slices"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
-// func CORSMiddleware() gin.HandlerFunc {
-// 	godotenv.Load()
-// 	return func(ctx *gin.Context) {
-// 		ctx.Header("Access-Control-Allow-Origin", os.Getenv("FRONTEND_URL"))
-// 		ctx.Header("Access-Controll-Allow-Headers", "Content-Type")
-// 		if ctx.Request.Method == "OPTIONS" {
-// 			ctx.Data(http.StatusOK, "", []byte(""))
-// 		} else {
-// 			ctx.Next()
-// 		}
-// 	}
-// }
-
-// func CORSMiddleware() gin.HandlerFunc {
-// 	godotenv.Load()
-// 	allowedOrigin := os.Getenv("FRONTEND_URL")
-// 	if allowedOrigin == "" {
-// 		allowedOrigin = "http://localhost:5173"
-// 	}
-
-// 	return func(ctx *gin.Context) {
-// 		ctx.Header("Access-Control-Allow-Origin", allowedOrigin)
-// 		ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
-// 		ctx.Header("Access-Control-Allow-Headers", "content-type,authorization")
-// 		ctx.Header("Access-Control-Allow-Credentials", "true")
-
-// 		if ctx.Request.Method == "OPTIONS" {
-// 			ctx.AbortWithStatus(204)
-// 			return
-// 		}
-// 		ctx.Next()
-// 	}
-// }
-
 func CORSMiddleware() gin.HandlerFunc {
-	godotenv.Load()
 	return func(ctx *gin.Context) {
-		ctx.Header("Access-Control-Allow-Origin", "*")
-		ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
-		ctx.Header("Access-Control-Allow-Headers", "content-type,authorization")
-		if ctx.Request.Method == "OPTIONS" {
-			ctx.Data(http.StatusOK, "", []byte(""))
-			return
-		} else {
-			ctx.Next()
+
+		origin := ctx.GetHeader("Origin")
+
+		urlEnv := os.Getenv("FRONTEND_URL")
+		if urlEnv == "" {
+			urlEnv = "http://localhost:5173"
 		}
+
+		allowOrigins := []string{
+			urlEnv,
+			"http://68.183.226.223:20609",
+			"http://68.183.226.223:20610",
+			"http://localhost:5173",
+			"http://localhost:5174",
+		}
+
+		allowHeaders := []string{
+			"Origin",
+			"Content-Type",
+			"Authorization",
+		}
+
+		allowMethods := []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodOptions,
+		}
+
+		if slices.Contains(allowOrigins, origin) {
+			ctx.Header("Access-Control-Allow-Origin", origin)
+		}
+		ctx.Header("Access-Control-Allow-Credentials", "true")
+		ctx.Header("Access-Control-Allow-Headers", strings.Join(allowHeaders, ", "))
+		ctx.Header("Access-Control-Allow-Methods", strings.Join(allowMethods, ", "))
+
+		if ctx.Request.Method == http.MethodOptions {
+			ctx.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		ctx.Next()
 	}
 }
