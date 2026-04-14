@@ -20,6 +20,15 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 	}
 }
 
+// Home godoc
+//
+//	@Summary		Get All Users
+//	@Description	Retrieve all users from the database
+//	@Tags			users
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		500	{object}	models.Response
+//	@Router			/users [get]
 func (h *UserHandler) Home(ctx *gin.Context) {
 	users, err := h.UserService.GetUsers()
 
