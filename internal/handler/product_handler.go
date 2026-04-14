@@ -169,6 +169,19 @@ func (h *ProductHandler) AddProduct(ctx *gin.Context) {
 	})
 }
 
+// UpdateProduct godoc
+//
+//	@Summary		Update Product
+//	@Description	Update an existing product by ID
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int				true	"Product ID"
+//	@Param			product	body		models.Product	true	"Product Data"
+//	@Success		200		{object}	models.Response
+//	@Failure		400		{object}	models.Response
+//	@Failure		404		{object}	models.Response
+//	@Router			/admin/products/{id} [put]
 func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 	var product models.Product
 
@@ -196,6 +209,16 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 	})
 }
 
+// DeleteProduct godoc
+//
+//	@Summary		Delete Product
+//	@Description	Delete product by ID
+//	@Tags			products
+//	@Produce		json
+//	@Param			id	path		int	true	"Product ID"
+//	@Success		200	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/admin/products/{id} [delete]
 func (h *ProductHandler) DeleteProduct(ctx *gin.Context) {
 	id, ok := helper.GetID(ctx)
 	if !ok {
