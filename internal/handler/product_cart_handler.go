@@ -6,6 +6,7 @@ import (
 	"backend/internal/service"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -98,7 +99,8 @@ func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
 	claims := jwt.MapClaims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
-		return []byte("SECRET_KEY"), nil
+		// fmt.Sprintf(":%s", os.Getenv("PORT"))
+		return fmt.Appendf(nil, ":%s", os.Getenv("PORT")), nil
 	})
 
 	if err != nil || !token.Valid {

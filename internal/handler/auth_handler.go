@@ -22,6 +22,18 @@ func NewAuthHandler(repo *service.AuthService) *AuthHandler {
 	}
 }
 
+// Login godoc
+//
+//	@Summary		Login user
+//	@Description	Authenticate user and generate JWT token
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			req	body		models.AuthLogin	true	"Login credentials"
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Failure		500	{object}	models.Response
+//	@Router			/auth/login [post]
 func (h *AuthHandler) Login(ctx *gin.Context) {
 	var req models.AuthLogin
 
@@ -63,6 +75,18 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success Login", token)
 }
 
+// Register godoc
+//
+//	@Summary		Register new user
+//	@Description	Register a new user to the system
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			req	body		models.AuthRegister	true	"Register credentials"
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Failure		500	{object}	models.Response
+//	@Router			/auth/register [post]
 func (h *AuthHandler) Register(ctx *gin.Context) {
 
 	var req models.AuthRegister

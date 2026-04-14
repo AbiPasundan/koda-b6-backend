@@ -2,12 +2,14 @@ package middleware
 
 import (
 	"backend/internal/models"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtKey = []byte("SECRET_KEY")
+var jwtKey = fmt.Appendf(nil, ":%s", os.Getenv("PORT"))
 
 func GenerateToken(userID int, email string, full_name string, address string, phone string, pictures string, created_at time.Time, role string) (string, error) {
 
