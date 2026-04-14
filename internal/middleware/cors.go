@@ -22,7 +22,9 @@ func CORSMiddleware() gin.HandlerFunc {
 		allowOrigins := []string{
 			urlEnv,
 			"http://68.183.226.223:20609",
+			"http://68.183.226.223:20601",
 			"http://68.183.226.223:20610",
+			"https://wildan-backend.camps.fahrul.id",
 			"http://localhost:5173",
 			"http://localhost:5174",
 		}
