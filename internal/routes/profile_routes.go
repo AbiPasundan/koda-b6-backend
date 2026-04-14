@@ -8,7 +8,9 @@ import (
 )
 
 func ProfileRoutes(r *gin.Engine, h *handler.ProfileHandler) {
-	admin := r.Group("/admin")
-	admin.Use(middleware.JWTMiddleware(), middleware.RoleMiddleware("admin", "user"))
-	admin.GET("/profile", h.GetMyProfile)
+	profile := r.Group("/profile")
+	profile.Use(middleware.JWTMiddleware(), middleware.RoleMiddleware("admin", "user"))
+	{
+		profile.GET("", h.GetMyProfile)
+	}
 }
