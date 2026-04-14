@@ -1,0 +1,46 @@
+services:
+  db-backend:
+    image: postgres:15-alpine
+    container_name: backend_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1
+      POSTGRES_DB: yuuke
+    ports:
+      - "5431:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d yuuke"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis
+    networks:
+      - webapps
+
+  app-golang:
+    image: ghcr.io/abipasundan/koda-b6-backend:latest
+    container_name: Golang_Backend
+    ports:
+      - "8811:8888"
+    environment:
+      - PORT=8888
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=1
+      - REDIS_HOST=redis
+      - DATABASE_URL=postgres://postgres:1@db:5432/yuuke?sslmode=disable
+      - APP_SECRET=d8e8fca2dc0f896fd7cb4cb0031ba249
+      - FRONTEND_URL=https://wildan.camps.fahrul.id
+    depends_on:
+      - db-backend
+networks:
+  webapps:
+    driver: bridge
+volumes:
+  pgdata:
+    driver: local
+  redis:
+    driver: local
