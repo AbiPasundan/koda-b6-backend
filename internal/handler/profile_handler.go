@@ -18,6 +18,16 @@ func NewProfileHandler(service *service.ProfileService) *ProfileHandler {
 	}
 }
 
+// GetMyProfile godoc
+//
+//	@Summary		Get My Profile
+//	@Description	Get the profile of the currently logged-in user
+//	@Tags			profile
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		401	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/profile [get]
 func (h *ProfileHandler) GetMyProfile(ctx *gin.Context) {
 	email, exists := ctx.Get("userEmail")
 	if !exists {
@@ -34,6 +44,17 @@ func (h *ProfileHandler) GetMyProfile(ctx *gin.Context) {
 	ctx.JSON(200, user)
 }
 
+// UpdateProfile godoc
+//
+//	@Summary		Update Profile
+//	@Description	Update the profile of the currently logged-in user
+//	@Tags			profile
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.User	true	"User Data"
+//	@Success		200		{object}	models.Response
+//	@Failure		400		{object}	models.Response
+//	@Router			/profile [put]
 func (h *UserHandler) UpdateProfile(ctx *gin.Context) {
 	id := 1
 
