@@ -32,6 +32,19 @@ type AddToCartRequest struct {
 	SizeName    string `json:"size_name"`
 }
 
+// AddCart godoc
+//
+//	@Summary		Add to Cart
+//	@Description	Add a product to the user's cart
+//	@Tags			cart
+//	@Security		BearerAuth
+//	@Accept			json
+//	@Produce		json
+//	@Param			req	body		models.AddCartRequest	true	"Add Cart Request"
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Failure		401	{object}	models.Response
+//	@Router			/cart [post]
 func (h *ProductCartHandler) AddCart(ctx *gin.Context) {
 	var req models.AddCartRequest
 
@@ -57,6 +70,16 @@ func (h *ProductCartHandler) AddCart(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success Delete Cart Item", nil)
 }
 
+// GetCart godoc
+//
+//	@Summary		Get Cart
+//	@Description	Get the current user's cart
+//	@Tags			cart
+//	@Security		BearerAuth
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/cart [get]
 func (h *ProductCartHandler) GetCart(ctx *gin.Context) {
 	id, ok := helper.GetID(ctx)
 	if !ok {
@@ -71,6 +94,19 @@ func (h *ProductCartHandler) GetCart(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success getting Cart data", &cart)
 }
 
+// DeleteCart godoc
+//
+//	@Summary		Delete from Cart
+//	@Description	Delete a product from the user's cart
+//	@Tags			cart
+//	@Security		BearerAuth
+//	@Accept			json
+//	@Produce		json
+//	@Param			req	body		models.DeleteCartItem	true	"Delete Cart Item Request"
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/cart [delete]
 func (h *ProductCartHandler) DeleteCart(ctx *gin.Context) {
 	var id models.DeleteCartItem
 
@@ -87,6 +123,16 @@ func (h *ProductCartHandler) DeleteCart(ctx *gin.Context) {
 	helper.ResponseOk(ctx, fmt.Sprintf("Success delete cart with id: %d", id.ProductID), nil)
 }
 
+// HistoryOrder godoc
+//
+//	@Summary		Order History
+//	@Description	Get the current user's order history
+//	@Tags			orders
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		401	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/historyorder [get]
 func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
 	authHeader := ctx.Request.Header.Get("Authorization")
 
@@ -119,6 +165,16 @@ func (h *ProductCartHandler) HistoryOrder(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success getting Order data", &cart)
 }
 
+// AddOrder godoc
+//
+//	@Summary		Create Order
+//	@Description	Create an order from the user's current cart
+//	@Tags			orders
+//	@Produce		json
+//	@Success		200	{object}	models.Response
+//	@Failure		400	{object}	models.Response
+//	@Failure		401	{object}	models.Response
+//	@Router			/orders [post]
 func (h *ProductCartHandler) AddOrder(ctx *gin.Context) {
 	test := ctx.Request.Context()
 
@@ -143,6 +199,16 @@ func (h *ProductCartHandler) AddOrder(ctx *gin.Context) {
 	helper.ResponseOk(ctx, "Success", orderID)
 }
 
+// GetOrderById godoc
+//
+//	@Summary		Get Order by ID
+//	@Description	Retrieve a specific order using its ID
+//	@Tags			orders
+//	@Produce		json
+//	@Param			id	path		string	true	"Order ID"
+//	@Success		200	{object}	models.Response
+//	@Failure		404	{object}	models.Response
+//	@Router			/historyorder/{id} [get]
 func (h *ProductCartHandler) GetOrderById(ctx *gin.Context) {
 	i := ctx.Param("id")
 

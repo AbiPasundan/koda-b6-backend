@@ -14,11 +14,15 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-//	@title			Coffee Shop API
-//	@version		1.0.0
-//	@description	coffe shop project
-//	@host			localhost:8888
-//	@BasePath		/api/v1
+//	@title						Coffee Shop API
+//	@version					1.0.0
+//	@description				coffe shop project
+//	@host						localhost:8888
+//	@BasePath					/
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Masukkan token dengan format: Bearer <token-anda>
 
 func main() {
 

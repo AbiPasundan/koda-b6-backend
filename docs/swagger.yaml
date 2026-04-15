@@ -1,5 +1,83 @@
-basePath: /api/v1
+basePath: /
 definitions:
+  models.AddCartRequest:
+    properties:
+      base_price:
+        type: integer
+      product_id:
+        type: integer
+      product_name:
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+      size_name:
+        type: string
+      user_id:
+        type: integer
+      variant_name:
+        type: string
+    required:
+    - product_id
+    - quantity
+    - user_id
+    type: object
+  models.AuthForgotPassword:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  models.AuthLogin:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      phone:
+        type: string
+      pictures:
+        type: string
+      role:
+        type: string
+    type: object
+  models.AuthRegister:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - full_name
+    - password
+    type: object
+  models.Category:
+    properties:
+      category_id:
+        type: integer
+      category_name:
+        type: string
+    type: object
+  models.DeleteCartItem:
+    properties:
+      cart_item_id:
+        type: integer
+    required:
+    - cart_item_id
+    type: object
   models.Product:
     properties:
       discount:
@@ -22,6 +100,23 @@ definitions:
       results: {}
       success:
         type: boolean
+    type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      phone:
+        type: string
+      pictures:
+        type: string
     type: object
   models.Users:
     properties:
@@ -64,6 +159,168 @@ paths:
       summary: Get All Product
       tags:
       - products
+  //historyorder/{id}:
+    get:
+      description: Retrieve a specific order using its ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get Order by ID
+      tags:
+      - orders
+  /admin/category:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all category from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get All Category
+      tags:
+      - category
+    post:
+      consumes:
+      - application/json
+      description: Create a new category
+      parameters:
+      - description: Category Data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/models.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Add Category
+      tags:
+      - category
+  /admin/category/{id}:
+    delete:
+      description: Delete category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete Category
+      tags:
+      - category
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a single category by its ID parameter
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Category by ID
+      tags:
+      - category
+    put:
+      consumes:
+      - application/json
+      description: Update an existing category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category Data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/models.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Update Category
+      tags:
+      - category
   /admin/products:
     post:
       consumes:
@@ -94,6 +351,149 @@ paths:
       summary: Add Product
       tags:
       - products
+  /admin/products/{id}:
+    delete:
+      description: Delete product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete Product
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Update an existing product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product Data
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update Product
+      tags:
+      - products
+  /auth/forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Request OTP for password reset
+      parameters:
+      - description: Forgot password request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/models.AuthForgotPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Request forgot password
+      tags:
+      - auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and generate JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/models.AuthLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Login user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user to the system
+      parameters:
+      - description: Register credentials
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/models.AuthRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Register new user
+      tags:
+      - auth
   /browseproduct:
     get:
       consumes:
@@ -113,6 +513,123 @@ paths:
       summary: Get Browse Product
       tags:
       - products
+  /cart:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product from the user's cart
+      parameters:
+      - description: Delete Cart Item Request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeleteCartItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete from Cart
+      tags:
+      - cart
+    get:
+      description: Get the current user's cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get Cart
+      tags:
+      - cart
+    post:
+      consumes:
+      - application/json
+      description: Add a product to the user's cart
+      parameters:
+      - description: Add Cart Request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddCartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Add to Cart
+      tags:
+      - cart
+  /historyorder:
+    get:
+      description: Get the current user's order history
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Order History
+      tags:
+      - orders
+  /orders:
+    post:
+      description: Create an order from the user's current cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create Order
+      tags:
+      - orders
   /products/home:
     get:
       consumes:
@@ -151,7 +668,69 @@ paths:
       summary: Get Product Reviews
       tags:
       - products
+  /profile:
+    get:
+      description: Get the profile of the currently logged-in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get My Profile
+      tags:
+      - profile
+    put:
+      consumes:
+      - application/json
+      description: Update the profile of the currently logged-in user
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update Profile
+      tags:
+      - profile
   /users:
+    get:
+      description: Retrieve all users from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get All Users
+      tags:
+      - users
     post:
       consumes:
       - application/json
@@ -226,4 +805,10 @@ paths:
       summary: Get user by ID
       tags:
       - users
+securityDefinitions:
+  BearerAuth:
+    description: 'Masukkan token dengan format: Bearer <token-anda>'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
