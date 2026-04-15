@@ -4,7 +4,9 @@ import (
 	"backend/internal/helper"
 	"backend/internal/models"
 	"backend/internal/service"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -59,22 +61,31 @@ func (h *ProfileHandler) GetMyProfile(ctx *gin.Context) {
 func (h *ProfileHandler) UpdateProfile(ctx *gin.Context) {
 	var updateUser models.UpdateProfile
 
-	// ambil user_id dari middleware JWT
 	idRaw, exists := ctx.Get("user_id")
 	if !exists {
 		helper.CustomeError(ctx, http.StatusUnauthorized, "Unauthorized", nil, nil)
 		return
 	}
-
 	id := idRaw.(int)
 
-	// bind body
-	if err := ctx.ShouldBindJSON(&updateUser); err != nil {
-		helper.BadRequest(ctx, "Invalid request body", nil, err)
+	if err := ctx.ShouldBind(&updateUser); err != nil {
+		helper.BadRequest(ctx, "Invalid request", nil, err)
 		return
 	}
 
-	// CALL SERVICE (langsung update, bukan create dulu!)
+	file, err := ctx.FormFile("pictures")
+	if err == nil {
+		filename := fmt.Sprintf("%d_%s", time.Now().Unix(), file.Filename)
+
+		path := "./uploads/" + filename
+		if err := ctx.SaveUploadedFile(file, path); err != nil {
+			helper.CustomeError(ctx, http.StatusInternalServerError, "Failed upload file", nil, err)
+			return
+		}
+
+		updateUser.Pictures = &filename
+	}
+
 	result, err := h.ProfileService.UpdateUser(id, updateUser)
 	if err != nil {
 		helper.CustomeError(ctx, http.StatusInternalServerError, "Failed update profile", nil, err)
@@ -83,28 +94,3 @@ func (h *ProfileHandler) UpdateProfile(ctx *gin.Context) {
 
 	helper.ResponseOk(ctx, "Success Update User", result)
 }
-
-// func (h *ProfileHandler) UpdateProfile(ctx *gin.Context) {
-// 	var updateUser models.UpdateProfile
-// 	id, exists := ctx.Get("user_id")
-
-// 	if !exists {
-// 		helper.CustomeError(ctx, http.StatusUnauthorized, "Unauthorized", nil, nil)
-// 		return
-// 	}
-// 	updateUser.Id = id.(int)
-
-// 	if err := ctx.ShouldBindJSON(&updateUser); err != nil {
-// 		helper.BadRequest(ctx, "Invalid request body", nil, err)
-// 		return
-// 	}
-
-// 	createUser, err := h.ProfileService.AddUser(updateUser)
-// 	if helper.NotFoundError(ctx, err) {
-// 		return
-// 	}
-
-// 	h.ProfileService.UpdateUserById(updateUser.Id, createUser)
-
-// 	helper.ResponseOk(ctx, "Succes Updated User", createUser)
-// }

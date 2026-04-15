@@ -41,21 +41,12 @@ type Response struct {
 	Results any    `db:"any"`
 }
 
-//	type UpdateProfile struct {
-//		Id        int     `db:"id" json:"id"`
-//		Full_Name string  `db:"full_name" json:"full_name"`
-//		Email     string  `db:"email" json:"email"`
-//		Password  string  `db:"password" json:"password"`
-//		Address   *string `db:"address" json:"address"`
-//		Phone     *string `db:"phone" json:"phone"`
-//		Pictures  *string `db:"pictures" json:"pictures"`
-//	}
 type UpdateProfile struct {
-	Id        int     `json:"id"`
-	Full_Name *string `json:"full_name"`
-	Email     *string `json:"email"`
-	Password  *string `json:"password"`
-	Address   *string `json:"address"`
-	Phone     *string `json:"phone"`
-	Pictures  *string `json:"pictures"`
+	Id        int     `json:"id" db:"id"`
+	Full_Name *string `json:"full_name" db:"id" form:"full_name"`
+	Email     *string `json:"email" db:"id" form:"email"`
+	Password  *string `json:"password" db:"id" form:"password"`
+	Address   *string `json:"address" db:"id" form:"address"`
+	Phone     *string `json:"phone" db:"id" form:"phone"`
+	Pictures  *string `json:"pictures" db:"id"`
 }
