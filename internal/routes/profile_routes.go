@@ -12,5 +12,6 @@ func ProfileRoutes(r *gin.Engine, h *handler.ProfileHandler) {
 	profile.Use(middleware.JWTMiddleware(), middleware.RoleMiddleware("admin", "user"))
 	{
 		profile.GET("", h.GetMyProfile)
+		profile.POST("/update-profile", h.UpdateProfile)
 	}
 }

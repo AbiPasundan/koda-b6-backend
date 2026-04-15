@@ -149,14 +149,58 @@ func (u *UserRepository) UpdatePasswordByEmail(email string, newPassword string)
 	return err
 }
 
-func (u *UserRepository) UpdateProfile(id int, user models.User) (models.User, error) {
-	rows, err := u.db.Query(context.Background(), `
-		UPDATE users SET full_name = $1, email = $2, password = $3, address = $4, phone = $5, pictures = $6 WHERE id = $7 RETURNING id, full_name, email, password, address, phone, pictures
-	`, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures, id)
+// func (u *UserRepository) UpdateProfile(id int, user models.UpdateProfile) (models.UpdateProfile, error) {
+// 	query := `UPDATE users SET full_name = COALESCE($1, full_name), email = COALESCE($2, email), password = COALESCE($3, password), address = COALESCE($4, address), phone = COALESCE($5, phone), pictures = COALESCE($6, pictures) WHERE id = $7 RETURNING id, full_name, email, password, address, phone, pictures`
+// 	// rows, err := u.db.Query(context.Background(), `
+// 	// 	UPDATE users SET full_name = $1, email = $2, password = $3, address = $4, phone = $5, pictures = $6 WHERE id = $7 RETURNING id, full_name, email, password, address, phone, pictures
+// 	// `, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures, id)
+// 	rows, err := u.db.Query(context.Background(), query, user.Full_Name, user.Email, user.Password, user.Address, user.Phone, user.Pictures, id)
+
+// 	if err != nil {
+// 		return models.UpdateProfile{}, err
+// 	}
+
+// 	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.UpdateProfile])
+// }
+
+func (u *UserRepository) UpdateProfile(id int, user models.UpdateProfile) (models.UpdateProfile, error) {
+	query := `
+	UPDATE users SET
+		full_name = COALESCE($1, full_name),
+		email = COALESCE($2, email),
+		password = COALESCE($3, password),
+		address = COALESCE($4, address),
+		phone = COALESCE($5, phone),
+		pictures = COALESCE($6, pictures)
+	WHERE id = $7
+	RETURNING id, full_name, email, password, address, phone, pictures
+	`
+
+	row := u.db.QueryRow(context.Background(),
+		query,
+		user.Full_Name,
+		user.Email,
+		user.Password,
+		user.Address,
+		user.Phone,
+		user.Pictures,
+		id,
+	)
+
+	var result models.UpdateProfile
+	err := row.Scan(
+		&result.Id,
+		&result.Full_Name,
+		&result.Email,
+		&result.Password,
+		&result.Address,
+		&result.Phone,
+		&result.Pictures,
+	)
 
 	if err != nil {
-		return models.User{}, err
+		return models.UpdateProfile{}, err
 	}
 
-	return pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
+	return result, nil
 }
