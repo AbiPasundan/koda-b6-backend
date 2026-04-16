@@ -1,4 +1,4 @@
-FROM golang:1.25.0-alpine AS build
+FROM golang:1.25.0-alpine AS builder
 
 WORKDIR /workspace
 
@@ -6,16 +6,16 @@ COPY . .
 
 RUN go mod tidy
 
-RUN go build -o test ./cmd/main.go
+RUN go build -o Coffeeshop-Backend ./cmd/main.go
 
-ENTRYPOINT ["/workspace/test"]
+RUN chmod +x Coffeeshop-Backend
 
-FROM golang:1.25.0-alpine
+FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=build /workspace/test /workspace/test /app/
+COPY --from=builder /workspace/Coffeeshop-Backend .
 
-ENTRYPOINT ["/app/test"]
+EXPOSE 8888
 
-# docker run --rm --network=server-name migrate/migrate:latest -source github:// link/ghcr/project/migration -database postgresql://postgres:1@localhost:5432?sslmode=disable down 1
+ENTRYPOINT [ "/app/Coffeeshop-Backend" ]
