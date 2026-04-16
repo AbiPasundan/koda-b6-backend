@@ -4,15 +4,32 @@ import (
 	"backend/internal/models"
 	"backend/internal/repository"
 	"context"
+	"log"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type ProductService struct {
 	ProductRepo *repository.ProductRepository
+	rdb         *redis.Client
 }
 
-func NewProductService(repo *repository.ProductRepository) *ProductService {
+func NewProductService(repo *repository.ProductRepository, rdb *redis.Client) *ProductService {
 	return &ProductService{
 		ProductRepo: repo,
+		rdb:         rdb,
+	}
+}
+
+func (p *ProductService) InvalidateProductCache() {
+	ctx := context.Background()
+	cacheKey := "product:browseproduct"
+
+	err := p.rdb.Del(ctx, cacheKey).Err()
+	if err != nil {
+		log.Println("Failed to delete cache:", err)
+	} else {
+		log.Println("Cache invalidated: products")
 	}
 }
 
@@ -25,14 +42,32 @@ func (p *ProductService) GetProductById(id int) (models.Product, error) {
 }
 
 func (p *ProductService) AddProduct(product models.Product) (models.Product, error) {
+	result, err := p.ProductRepo.AddProduct(product)
+	if err != nil {
+		return result, err
+	}
+
+	p.InvalidateProductCache()
 	return p.ProductRepo.AddProduct(product)
 }
 
 func (p *ProductService) UpdateProductById(id int, product models.Product) (models.Product, error) {
+	result, err := p.ProductRepo.AddProduct(product)
+	if err != nil {
+		return result, err
+	}
+
+	p.InvalidateProductCache()
 	return p.ProductRepo.UpdateProductById(id, product)
 }
 
 func (p *ProductService) DeleteProductById(id int) error {
+	err := p.ProductRepo.DeleteProductById(id)
+	if err != nil {
+		return err
+	}
+
+	p.InvalidateProductCache()
 	return p.ProductRepo.DeleteProductById(id)
 }
 
